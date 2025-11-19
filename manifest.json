@@ -1,0 +1,145 @@
+{
+  "source_base_path": "C:/Users/hirotada_yasui/Documents/DocFXGit/Fire-Spread-Simulator/gh-pages/markdown",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/devMan.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/devMan.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "manual/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "manual/toc.html"
+        },
+        ".json": {
+          "relative_path": "manual/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/userMan1.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/userMan1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/userMan2.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/userMan2.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/devMan/FileCreator_simFire.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/devMan/FileCreator_simFire.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/devMan/Support_simFire.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/devMan/Support_simFire.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/devMan/extract.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/devMan/extract.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/devMan/folder.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/devMan/folder.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/index1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/index1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/logo.svg",
+      "output": {
+        "resource": {
+          "relative_path": "resources/logo.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
