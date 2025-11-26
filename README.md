@@ -92,6 +92,8 @@
 | ディスプレイ解像度 | 1280×720以上                                                                                                                                                                                                                                                                                                                                    |  同左                   | 
 | ネットワーク       | 背景地図表示のため以下のURLを閲覧できる環境が必要<br>・地理院タイル<br>　標準地図：https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png<br>　淡色地図：https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png<br>　写　　真：https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg|  同左                            | 
 
+
+
 ## 7. 本リポジトリのフォルダ構成 <!-- 本GitHub上のソースファイルの構成を記載ください。 -->
 
 
@@ -122,6 +124,7 @@
 - 本リポジトリは参考資料として提供しているものです。動作保証は行っていません。
 - 本リポジトリについては予告なく変更又は削除をする可能性があります。
 - 本リポジトリの利用により生じた損失及び損害等について、国土交通省はいかなる責任も負わないものとします。
+- 最小動作環境は2025年度ProjectPLATEAU直轄事業内で検証した内容です
 
 ## 10. 参考資料 <!-- 技術検証レポートのURLはアクセンチュアにて記載します。 -->
 - 技術検証レポート: https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0030_ver01.pdf
