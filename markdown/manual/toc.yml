@@ -10,3 +10,5 @@
       href: userMan1.md
     - name: 条件設定支援ツール
       href: userMan2.md
+- name: ソースファイルのビルド手順（開発者向け）
+  href: devMan2.md
