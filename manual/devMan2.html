@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>環境構築手順書 </title>
+      <title>ソースファイルのビルド手順 </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="環境構築手順書 ">
+      <meta name="title" content="ソースファイルのビルド手順 ">
     
     
       <link rel="shortcut icon" href="../favicon.ico">
@@ -77,10 +77,10 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="環境構築手順書">環境構築手順書</h1>
+<h1 id="ソースファイルのビルド手順">ソースファイルのビルド手順</h1>
 
 <h1 id="1-本書について">1 本書について</h1>
-<p>本書では、火災延焼シミュレーションシステム（以下「本システム」という。）の利用環境構築手順について記載しています。本システムの構成や仕様の詳細については以下も参考にしてください。</p>
+<p>本書では、火災延焼シミュレーションシステム（以下「本システム」という。）の開発環境構築手順について記載しています。本システムの構成や仕様の詳細については以下も参考にしてください。</p>
 <div class="NOTE">
 <h5>Note</h5>
 <p><a href="https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0030_ver01.pdf">技術検証レポート（URL要更新）</a></p>
@@ -89,70 +89,199 @@
 <h5>Important</h5>
 <p>本システムを実行するには「市街地火災シミュレーションプログラム」のエンジンが必要です。エンジンは、現時点では開発中のため一般公開されていません。詳細は、<a href="https://github.com/Project-PLATEAU/Fire-Spread-Simulator">GitHub火災延焼シミュレーションシステムページ</a>の「3. 利用手順」をご確認ください。</p>
 </div>
-<h1 id="2-動作環境">2 動作環境</h1>
-<p>本システムの動作環境は以下のとおりです。</p>
+<h1 id="2-開発環境">2 開発環境</h1>
+<p>本システムはMicrosoft Visual Studio 2022 を統合開発環境（IDE）として使用して開発しました。以下に主な開発環境の構成を示す。</p>
 <table>
 <thead>
 <tr>
 <th>項目</th>
-<th>最小動作環境</th>
-<th>推奨動作環境</th>
+<th>内容</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>OS</td>
-<td>Windows 11</td>
-<td>同左</td>
+<td>統合開発環境（IDE）</td>
+<td>Microsoft Visual Studio Professional 2022<br>(64 ビット Version 17.14.4)</td>
 </tr>
 <tr>
-<td>CPU</td>
-<td>Intel Core i5以上</td>
-<td>同左</td>
+<td>プログラミング言語</td>
+<td>C# 12</td>
 </tr>
 <tr>
-<td>メモリ</td>
-<td>8GB以上</td>
-<td>同左</td>
+<td>ターゲットフレームワーク</td>
+<td>.NET 8</td>
 </tr>
 <tr>
-<td>ディスプレイ<br>解像度</td>
-<td>1280×720以上</td>
-<td>同左</td>
+<td>パッケージ管理</td>
+<td>NuGet による外部ライブラリの導入と管理</td>
 </tr>
 <tr>
-<td>ネットワーク</td>
-<td>背景地図表示のため以下のURLを閲覧できる環境が必要<br>・地理院タイル<br>　標準地図：https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png<br>　淡色地図：https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png<br>　写　　真：https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg</td>
-<td>同左</td>
+<td>デバッグ、ビルド</td>
+<td>VisualStudio の標準機能を使用</td>
+</tr>
+<tr>
+<td>リリース用ビルド</td>
+<td>VisualStudio の発行コマンドの実行、及び外部ツールの同梱をバッチで実行</td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li>最小動作環境は令和7年度Project PLATEAU直轄事業内で検証した内容です。</li>
-</ul>
-<h1 id="3-インストール手順">3 インストール手順</h1>
+<p>※本システムで利用している「シミュレーション用データ変換ツール」は、Python3（python 3.9.18）／Anaconda（conda 23.5.2）環境で開発が行われています。</p>
+<h1 id="3-火災延焼シミュレーションシステムのビルド手順">3 火災延焼シミュレーションシステムのビルド手順</h1>
 <h2 id="31ダウンロード展開">3.1ダウンロード・展開</h2>
 <ol>
-<li><p><a href="https://github.com/Project-PLATEAU/Fire-Spread-Simulator/releases/">こちら</a>
-からアプリケーションをダウンロードします。</p>
+<li><p><a href="https://github.com/Project-PLATEAU/Fire-Spread-Simulator/Src/">こちら</a>
+からソースコードをダウンロードします。</p>
 </li>
-<li><p>ダウンロード後、zipファイルを右クリックし、「すべて展開」を選択し、任意のフォルダにzipファイルを展開します。</p>
+<li><p>国総研より配布を受けたエンジン「simFireMP64.exe」を以下の2か所に配置します。</p>
 </li>
 </ol>
-<p><img src="../resources/devMan/extract.png" alt=""></p>
-<p><br>※ここでは、「C:\延焼」に展開しています。</p>
-<ol start="3">
-<li>展開が完了すると「C:\延焼」の配下に「SimulationSourceFileCreator」フォルダ（ファイル作成ツールのフォルダ）と「SimulationSupportTool」（条件設定支援ツールのフォルダ）が作成されます。</li>
+<ul>
+<li>ExternalTools\SimFire_ForSourceFileCreator</li>
+<li>ExternalTools\SimFire_ForSupportTool</li>
+</ul>
+<h2 id="32ファイル作成ツール条件設定支援ツールgisデータ変換ツールのビルド">3.2ファイル作成ツール・条件設定支援ツール・GISデータ変換ツールのビルド</h2>
+<div class="NOTE">
+<h5>Note</h5>
+<ul>
+<li>リリース用ビルド（実行ファイルの発行）は、「ReleasePackage」フォルダに格納されているバッチを実行することにより、行います。</li>
+<li>実行ファイルの発行は VisualStudio の発行コマンドを使用しているため、「2 開発環境」に示すVisualStudio でソリューションのビルドができることが前提条件となります。</li>
+<li>フォルダ構成はアプリケーションで使用するための構成となっており、変更すると動作しなくなる可能性があります</li>
+</ul>
+</div>
+<h3 id="1gisデータ変換ツールの実行ファイルの発行">1.GISデータ変換ツールの実行ファイルの発行</h3>
+<p>以下のバッチファイルを実行する</p>
+<pre><code class="lang-Batch">ReleasePackage\SimulationResultFileConverter_publish.bat
+</code></pre>
+<p><strong>バッチの処理内容</strong></p>
+<ul>
+<li>GISデータ変換ツールの実行ファイル（SimulationResultFileConverter.exe）の発行</li>
+</ul>
+<p>※GISデータ変換ツールは通常は単体では実行しないため使用しない想定。条件設定支援ツールの実行ファイルの発行バッチで所定のフォルダに発行を行っている。</p>
+<h3 id="2ファイル作成ツールの実行ファイルの発行バッチ">2.ファイル作成ツールの実行ファイルの発行バッチ</h3>
+<p>以下のバッチファイルを実行する</p>
+<pre><code class="lang-Batch">ReleasePackage\SimulationSourceFileCreator_publish.bat
+</code></pre>
+<p><strong>バッチの処理内容</strong></p>
+<ul>
+<li>ファイル作成ツールの実行ファイル（SimulationSourceFileCreator.exe）の発行</li>
+<li>データ変換ツール（Python＋Anaconda）の「外部ツールのフォルダ」からの複製</li>
+<li>延焼シミュレーションエンジン（ファイル作成ツール用）の「外部ツールのフォルダ」からの複製</li>
+</ul>
+<h3 id="3条件設定支援ツールの実行ファイルの発行バッチ">3.条件設定支援ツールの実行ファイルの発行バッチ</h3>
+<p>以下のバッチファイルを実行する</p>
+<pre><code class="lang-Batch">ReleasePackage\SimulationSupportTool_publish.bat
+</code></pre>
+<p><strong>バッチの処理内容</strong></p>
+<ul>
+<li>条件設定支援ツールの実行ファイル（SimulationSupportTool.exe）の発行</li>
+<li>GISデータ変換ツールの実行ファイル（SimulationResultFileConverter.exe）の発行</li>
+<li>延焼シミュレーションエンジン（条件設定支援ツール用）の「外部ツールのフォルダ」からの複製</li>
+</ul>
+<h2 id="33シミュレーション用データ変換ツールのビルド">3.3シミュレーション用データ変換ツールのビルド</h2>
+<p>※「ファイル作成ツール」は、国総研が開発した「シミュレーション用データ変換ツール」をビルド（exe化）して利用しています。</p>
+<h3 id="1仮想環境の構築外部ライブラリの導入">1.仮想環境の構築・外部ライブラリの導入</h3>
+<div class="NOTE">
+<h5>Note</h5>
+<p>以下の「1.仮想環境(env_r5nilim) を構築」から「 4.	各ライブラリのバージョンを確認」までの記載は「シミュレーション用データ変換ツール」開発時の報告書（令和５年度市街地火災シミュレータ拡張３Ｄ都市モデルＬＯＤ２対応データ変換ツール作成業務　報告書）を元に作成されています。</p>
+</div>
+<p>以下のcondaコマンドで仮想環境を構築し、外部ライブラリを導入する。</p>
+<ol>
+<li><p>仮想環境(env_r5nilim) を構築</p>
+<pre><code class="lang-Batch">(base) conda create -n env_r5nilim python=3.9
+</code></pre>
+</li>
+<li><p>仮想環境(env_r5nilim) をアクティベート</p>
+<pre><code class="lang-Batch">(base) conda activate env_r5nilim
+</code></pre>
+</li>
+<li><p>仮想環境(env_r5nilim) に外部ライブラリを導入</p>
+<pre><code class="lang-Batch">(env_r5nilim) conda install gdal
+(env_r5nilim) conda install shapely
+(env_r5nilim) conda install shapely
+(env_r5nilim) conda install lxml
+(env_r5nilim) conda install trimesh -c conda-forge
+(env_r5nilim) conda install rtree
+</code></pre>
+</li>
+<li><p>各ライブラリのバージョンを確認</p>
+<pre><code class="lang-Batch">(env_r5nilim) conda list
+：
+gdal　3.6.2 py39h7670e6c_3 main
+：
+shapely　2.0.1 py3 9hd7f5953_0
+：
+lxml 4.9.2 py39h2bbff1b_0
+：
+trimesh　4.1.3 pyhd8ed1ab_0 conda-forge
+：
+rtree　1.0.1 py39h2eaa2aa_0 main
+</code></pre>
+<p>5.追加のライブラリを導入する<br>
+※お使いの環境次第では、以下のライブラリの追加導入が必要な場合があります。</p>
+<pre><code class="lang-Batch">conda install -c conda-forge opencv
+conda install -c conda-forge mapbox_earcut
+</code></pre>
+</li>
 </ol>
-<p><img src="../resources/devMan/folder.png" alt=""></p>
-<h2 id="32エンジン格納">3.2エンジン格納</h2>
-<p>1.国総研より配布を受けたエンジン「simFireMP64.exe」を以下の2か所に配置します。</p>
-<p>「C:\延焼\SimulationSourceFileCreator\SimFire」
-<img src="../resources/devMan/FileCreator_simFire.png" alt=""></p>
-<p>「C:\延焼\SimulationSupportTool\SimFire」
-<img src="../resources/devMan/Support_simFire.png" alt=""></p>
-<p>※「C:\延焼」以外のフォルダに展開した場合、適宜、読み替えて下さい。<br><br><br></p>
-<p>2.以下、<a href="userMan1.html">操作マニュアル(ファイル作成ツール)</a>の手順で本システムを実行できます。</p>
+<h3 id="2pyinstallerによるexeファイル作成">2.pyinstallerによるexeファイル作成</h3>
+<p>以下のcondaコマンドでexeファイルを作成する。</p>
+<ol>
+<li><p>pyinstallerのインストール</p>
+<pre><code class="lang-Batch">(env_r5nilim) &gt; pip install pyinstaller
+</code></pre>
+</li>
+<li><p>pyinstallerのバージョン確認</p>
+<pre><code class="lang-Batch">(env_r5nilim) &gt; pyinstaller --version
+6.15.0
+</code></pre>
+</li>
+<li><p>Pythonファイル(plateau_conv.py)のあるフォルダへ移動</p>
+<pre><code class="lang-Batch">(env_r5nilim) &gt; cd &lt;プログラム配置フォルダパス&gt;\createFile
+</code></pre>
+</li>
+<li><p>pyinstallerコマンドでexeファイル作成</p>
+<pre><code class="lang-Batch">(env_r5nilim) &gt; pyinstaller plateau_conv.py
+</code></pre>
+<p>distフォルダにexe、カレントディレクトリにspecファイルが作成される</p>
+<pre><code class="lang-Batch">createFile（カレントディレクトリ）
+ ├dist
+ │　└plateau_conv
+ │　　　├_internal
+ │　　　└plateau_conv.exe
+ └plateau_conv.spec
+
+※作成されるフォルダ・ファイルのみ記載
+</code></pre>
+</li>
+<li><p>plateau_conv.spec の修正</p>
+<p>このままではエラー（「ModuleNotFoundError: No module named 'osgeo._gdal'」）となるので、 hiddenimportsに'osgeo._gdal'を追記</p>
+<pre><code class="lang-Batch">hiddenimports=['osgeo._gdal']
+</code></pre>
+</li>
+<li><p>今度はspecファイルを使用してpyinstallerコマンドでexeを作成</p>
+<pre><code class="lang-Batch">(env_r5nilim) &gt; pyinstaller plateau_conv.spec
+</code></pre>
+</li>
+<li><p>exeと同じフォルダに「proj.db」を配置</p>
+<p>Pythonがインストールされていない環境では「proj.db」が必要となるので、仮想環境のライブラリからコピーして配置する</p>
+<p>コピー元：&quot;C:\Program Files\anaconda3\envs\env_r5nilim\Library\share\proj\proj.db&quot;<br>※インストール先フォルダに合わせてパスを読み替える</p>
+</li>
+<li><p>cfgファイルの配置</p>
+<p>プログラムの実行に必要な「plateau_conv.cfg」を配置する</p>
+<pre><code class="lang-Batch">createFile（カレントディレクトリ）
+├dist
+│　└plateau_conv
+│　　　├_internal
+│　　　├cfg
+│　　　│　└plateau_conv.cfg
+│　　　├plateau_conv.exe
+│　　　└proj.db
+└plateau_conv.spec
+
+※ここでは作成されるフォルダ・ファイル、および追加するフォルダ・ファイルのみ記載
+</code></pre>
+</li>
+</ol>
 
 </article>
           </div>
