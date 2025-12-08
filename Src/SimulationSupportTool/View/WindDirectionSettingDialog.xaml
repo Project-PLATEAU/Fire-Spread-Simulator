@@ -1,0 +1,95 @@
+﻿<Window x:Class="SimulationSupportTool.View.WindDirectionSettingDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:SimulationSupportTool.View"
+        mc:Ignorable="d"
+        Title="風向の設定"
+        SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+
+    <StackPanel Margin="5">
+        <Border Margin="5"
+                BorderThickness="1"
+                BorderBrush="Black"
+                Background="White"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Width="120"
+                Height="120">
+            <Grid Margin="3">
+                <TextBlock Text="北" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                <TextBlock Text="南" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                <TextBlock Text="東" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                <TextBlock Text="西" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+
+                <Image Height="65"
+                       Width="13"
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"
+                       Source="/Resources/images/wind_direction_arrow.png"
+                       RenderTransformOrigin="0.5,0.5">
+                    <Image.RenderTransform>
+                        <RotateTransform Angle="{Binding WindDirection, Mode=OneWay}" />
+                    </Image.RenderTransform>
+                </Image>
+
+                <Canvas x:Name="compassCanvas"
+                        Width="80"
+                        Height="80">
+                    <Ellipse x:Name="compassEllipse"
+                             Width="80"
+                             Height="80"
+                             Stroke="Black"
+                             StrokeThickness="1"
+                             Fill="Transparent"
+                             Canvas.Left="0"
+                             Canvas.Top="0">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonDown">
+                                <i:InvokeCommandAction Command="{Binding SelectDirectionCommand}" CommandParameter="{Binding ElementName=compassEllipse}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Ellipse>
+                </Canvas>
+            </Grid>
+        </Border>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="5">
+            <TextBox Width="50"
+                     IsReadOnly="True"
+                     Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                     Text="{Binding WindDirectionText, Mode=OneWay}"
+                     Style="{StaticResource CommonTextBoxStyle}"/>
+            <TextBox Margin="5,0,0,0"
+                     IsReadOnly="True"
+                     Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                     Text="{Binding WindDirection, Mode=OneWay}"
+                     Style="{StaticResource NumberTextBoxStyle}"/>
+            <TextBlock Text="°"
+                       Margin="5,0,0,0"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,5,0,0">
+            <Button Content="OK"
+                    Margin="0"
+                    IsDefault="True"
+                    Style="{StaticResource CommonButtonStyle}"
+                    Command="{Binding OkCommand}"/>
+
+            <Button Content="キャンセル"
+                    Margin="5,0,0,0"
+                    IsCancel="True"
+                    Style="{StaticResource CommonButtonStyle}"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

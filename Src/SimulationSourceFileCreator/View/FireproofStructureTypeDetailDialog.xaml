@@ -1,0 +1,103 @@
+﻿<Window x:Class="SimulationSourceFileCreator.View.FireproofStructureTypeDetailDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimulationSourceFileCreator.View"
+        mc:Ignorable="d"
+        Title="防火構造の詳細"
+        Height="520"
+        Width="900"
+        MinHeight="500"
+        MinWidth="900">
+
+    <StackPanel>
+        <TextBlock Text="防火構造の概要と本システムにおける取扱い"
+                   FontWeight="Bold"
+                   Margin="5"/>
+        <Border BorderBrush="Black"
+                BorderThickness="0,0,1,1"
+                Margin="5,0,5,5">
+            <Grid UseLayoutRounding="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="110"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Background="#F0F0F0" />
+
+                <local:GridTextControl Grid.Row="0" Grid.Column="0" Text="カテゴリ名"
+                                       TextHorizontalAlignment="Center"/>
+                <local:GridTextControl Grid.Row="0" Grid.Column="1" Text="概要"
+                                       TextHorizontalAlignment="Center"/>
+                <local:GridTextControl Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="本システムによる取扱い"
+                                       TextHorizontalAlignment="Center"/>
+                <local:GridTextControl Grid.Row="0" Grid.Column="4" Text="法的根拠"
+                                       TextHorizontalAlignment="Center"/>
+
+                <local:GridTextControl Grid.Row="1" Grid.Column="0" Text="耐火"/>
+                <local:GridTextControl Grid.Row="2" Grid.Column="0" Text="準耐火"/>
+                <local:GridTextControl Grid.Row="3" Grid.Column="0" Text="防火"/>
+                <local:GridTextControl Grid.Row="4" Grid.Column="0" Text="準防火"/>
+                <local:GridTextControl Grid.Row="5" Grid.Column="0" Text="裸木"/>
+
+                <local:GridTextListControl Grid.Row="1" Grid.Column="1"
+                                           Text1="壁、柱、床その他の建築物の部分の構造が、通常の火災が終了するまでの間、その火災による建築物の倒壊及び延焼を防止するために必要とされる性能を満たす構造"
+                                           Text2="建物の部位や規模に応じ、30分から3時間、通常の火災による構造耐力上支障のある変形、溶融、破壊その他の損傷を生じないことが求められる"/>
+                <local:GridTextListControl Grid.Row="2" Grid.Column="1"
+                                           Text1="壁、柱、床その他の建築物の部分の構造が、通常の火災による延焼を防止するために必要とされる性能を満たす構造"
+                                           Text2="建物の部位に応じ、30分から45分間、通常の火災による構造耐力上支障のある変形、溶融、破壊その他の損傷を生じないことが求められる"/>
+                <local:GridTextListControl Grid.Row="3" Grid.Column="1"
+                                           Text1="外壁や軒裏（のきうら）などが、建築物の周囲で発生した通常の火災による延焼を抑制するために必要とされる性能を満たす構造"
+                                           Text2="周囲の火災から30分間、通常の火災による構造耐力上支障のある変形、溶融、破壊その他の損傷を生じないことが求められる"
+                                           Text3="周囲の火災から30分間、加熱されても、屋内が可燃物燃焼温度以上に上昇しないことが求められる。"/>
+                <local:GridTextListControl Grid.Row="4" Grid.Column="1"
+                                           Text1="外壁を、建築物の周囲において発生する通常の火災による延焼の抑制に一定の効果を発揮するために必要とされる性能を満たす構造"
+                                           Text2="外壁が、周囲の火災から20分間、通常の火災による構造耐力上支障のある変形、溶融、破壊その他の損傷を生じないことが求められる"
+                                           Text3="外壁が、周囲の火災から20分間、加熱されても、屋内が可燃物燃焼温度以上に上昇しないことが求められる。"/>
+                <local:GridTextListControl Grid.Row="5" Grid.Column="1"
+                                           Text1="上記を満たさない木造建築物"/>
+
+                <local:GridTextListControl Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2"
+                                           Text1="延焼シミュレーションシステム（ファイル作成ツール）が"
+                                           Text1AfterBold="自動的に判断"
+                                           Text2="3D都市モデル（建築物）が保持する情報を用いて作成"/>
+                <local:GridTextListControl Grid.Row="3" Grid.Column="2" Grid.RowSpan="3"
+                                           Text1="耐火・準耐火以外の建物（木造建物）について、「防火造」「準防火造」「裸木造」の中から、適用したいものを"
+                                           Text1AfterBold="ユーザが選択"/>
+
+                <local:GridTextListControl Grid.Row="3" Grid.Column="3"
+                                           Text1BeforeBold="比較的最近（2000年ごろ以降）建てられた木造建築物"
+                                           Text1="が集まるような地域の場合に選択"/>
+                <local:GridTextListControl Grid.Row="4" Grid.Column="3"
+                                           Text1BeforeBold="防火造と裸木造の中間"
+                                           Text1="の場合に選択"
+                                           Text2="建築基準法第22条指定区域に求められる防火性能。"/>
+                <local:GridTextListControl Grid.Row="5" Grid.Column="3"
+                                           Text1BeforeBold="木造密集地域や古い木造住宅"
+                                           Text1="が集まるような地域の場合に選択"/>
+
+                <local:GridTextControl Grid.Row="1" Grid.Column="4" Text="令１０７、令１０７の２"/>
+                <local:GridTextControl Grid.Row="2" Grid.Column="4" Text="令１１５の２の２、令１０９の３一号、令１０９の３二号、令１３６の２"/>
+                <local:GridTextControl Grid.Row="3" Grid.Column="4" Text="令１０８"/>
+                <local:GridTextControl Grid.Row="4" Grid.Column="4" Text="令１０９の１０"/>
+                <local:GridTextControl Grid.Row="5" Grid.Column="4" Text="なし"/>
+            </Grid>
+        </Border>
+
+        <TextBlock Text="※令：建築基準法施行令"
+                   HorizontalAlignment="Right"
+                   Margin="0,0,5,5"/>
+    </StackPanel>
+</Window>

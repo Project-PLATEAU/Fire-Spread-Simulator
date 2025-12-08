@@ -1,0 +1,8 @@
+
+  "inputSimulationSourceFolderPath": "..\\シミュレーションデータフォルダ",
+  "inputSimulationResultFolderPath": "..\\シミュレーション結果フォルダ",
+  "outputGisDataFolderPath": "..\\出力フォルダ",
+  "isOutputBuilding": true,
+  "isOutputFirePath": true,
+  "isEllipsoidHeight": true
+}

@@ -1,0 +1,19 @@
+﻿<Project Sdk="MSTest.Sdk/3.6.4">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseVSTest>true</UseVSTest>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimulationCommonLibrary\SimulationCommonLibrary.csproj" />
+    <ProjectReference Include="..\SimulationResultFileConverter\SimulationResultFileConverter.csproj" />
+    <ProjectReference Include="..\SimulationSourceFileCreator\SimulationSourceFileCreator.csproj" />
+    <ProjectReference Include="..\SimulationSupportTool\SimulationSupportTool.csproj" />
+  </ItemGroup>
+
+</Project>

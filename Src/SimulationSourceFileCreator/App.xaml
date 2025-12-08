@@ -1,0 +1,17 @@
+﻿<Application x:Class="SimulationSourceFileCreator.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SimulationSourceFileCreator"
+             StartupUri="View/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- 共通のリソース取り込み -->
+                <ResourceDictionary Source="pack://application:,,,/SimulationCommonLibrary;component/Resources/ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- 以降、プロジェクト固有のリソースを追加 -->
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

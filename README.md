@@ -105,13 +105,16 @@
 
 | フォルダ名 |　詳細 |
 |-|-|
-| ExternalTools | 外部ツール(エンジン・データ変換ツール)の格納用フォルダ |
-| ReleasePackage | リリース用ビルドフォルダ|
-| SimulationCommonLibrary |共通クラスライブラリプロジェクト<br>種類：WPFクラスライブラリ（dll）|
-| SimulationResultFileConverter | GISデータ変換ツールプロジェクト<br>種類：コンソールアプリケーション（exe） |
-| SimulationSourceFileCreator | ファイル作成ツールプロジェクト<br>種類：WPFアプリケーション（exe）| 
-| SimulationSupportTool | 条件設定支援ツールプロジェクト<br>種類：WPFアプリケーション（exe）| 
-| UnitTest| 単体テストプロジェクト<br>種類：MSTestプロジェクト |
+| data| 本READMEに使用しているファイル（画像を除く）格納用フォルダ|
+| img| 本READMEに使用している画像格納用フォルダ|
+| Src| 本システムのソースコードを及びビルドに必要な各種ファイルの格納用フォルダ |
+| Src\ExternalTools | 外部ツール(エンジン・データ変換ツール)の格納用フォルダ |
+| Src\ReleasePackage | リリース用ビルドフォルダ、ビルド用バッチを格納|
+| Src\SimulationCommonLibrary |共通クラスライブラリプロジェクト<br>種類：WPFクラスライブラリ（dll）|
+| Src\SimulationResultFileConverter | GISデータ変換ツールプロジェクト<br>種類：コンソールアプリケーション（exe） |
+| Src\SimulationSourceFileCreator | ファイル作成ツールプロジェクト<br>種類：WPFアプリケーション（exe）| 
+| Src\SimulationSupportTool | 条件設定支援ツールプロジェクト<br>種類：WPFアプリケーション（exe）| 
+| Src\UnitTest| 単体テストプロジェクト<br>種類：MSTestプロジェクト |
 
 ## 8. ライセンス <!-- 変更せず、そのまま使うこと。 -->
 

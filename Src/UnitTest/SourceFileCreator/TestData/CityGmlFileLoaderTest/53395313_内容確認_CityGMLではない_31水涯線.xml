@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Dataset gml:id="ID_1" 
+xsi:schemaLocation="http://www.gsi.go.jp/GIS/jpgis/ATA_Schema1.0 ATA_Schema1.0.xsd" 
+xmlns:ata="http://www.gsi.go.jp/GIS/jpgis/ATA_Schema1.0" 
+xmlns:gml="http://www.opengis.net/gml/3.2" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns="http://www.gsi.go.jp/GIS/jpgis/ATA_Schema1.0">
+
+<gml:description>南極地図データ情報メタデータ やまと山脈 水涯線</gml:description>
+<gml:name>南極地図データ(GML)</gml:name>
+
+<水涯線 gml:id="C1">
+ <図式コード>3101</図式コード>
+ <発生日付 gml:id="d1_1">
+  <gml:timePosition>2010-09-15</gml:timePosition>
+ </発生日付>
+ <確認日 gml:id="d1_2">
+  <gml:timePosition>2014-03-15</gml:timePosition>
+ </確認日>
+ <地理情報レベル>25000</地理情報レベル>
+ <場所>
+  <gml:Curve gml:id="C1-g" srsName="jpsuuid:jgd2000.bl">
+   <gml:segments>
+    <gml:LineStringSegment>
+     <gml:posList>-71.666714810 35.706513040 -71.666629960 35.704940330 -71.666458300 35.703768400 -71.666309500 35.703320500 -71.666238730 35.703421350 -71.666206860 35.703971450 -71.666221420 35.705020360 -71.666306880 35.706143280 -71.666408350 35.706816670 -71.666510200 35.706990320 -71.666643770 35.706888710 -71.666691010 35.706763200 -71.666714810 35.706513040</gml:posList>
+    </gml:LineStringSegment>
+   </gml:segments>
+  </gml:Curve>
+ </場所>
+</水涯線>
+</Dataset>
+

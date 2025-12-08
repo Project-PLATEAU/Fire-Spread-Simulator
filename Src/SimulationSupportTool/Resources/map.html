@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <!--leaflet-->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!--leaflet.draw-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css" />
+
+    <!--turf-->
+    <script src='https://unpkg.com/@turf/turf@6.5.0/turf.min.js'></script>
+
+    <!-- easybutton -->
+    <script src="https://unpkg.com/leaflet-easybutton@2.4.0/src/easy-button.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-easybutton@2.4.0/src/easy-button.css" />
+
+    <link rel="stylesheet" href="./map.css" />
+    <script>
+        var map;
+
+        function init() {
+            //地図を表示するdiv要素のidを設定
+            map = L.map('mapcontainer');
+
+            //地図の中心とズームレベルを指定
+            map.setView([35.40, 136], 5);
+
+            // Leaflet標準の帰属表示を無効化
+            map.attributionControl.setPrefix(false);
+
+            //スケールコントロールを最大幅200px、右下、m単位で地図に追加
+            L.control.scale({ maxWidth: 200, position: 'bottomleft', imperial: false }).addTo(map);
+
+            //地理院地図の標準地図
+            var std = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
+                { attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院地図</a>" });
+
+            //地理院地図の淡色地図
+            var pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
+                { attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院地図</a>" });
+
+            //地理院地図の写真
+            var photo = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg',
+                { attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院地図</a>" });
+
+            // 非表示
+            var empty = L.tileLayer('');
+
+            //baseMapsオブジェクトのプロパティに3つのタイルを設定
+            var baseMaps = {
+                "地理院地図（標準地図）": std,
+                "地理院地図（淡色地図）": pale,
+                "地理院地図（写真）": photo,
+                "非表示": empty
+            };
+
+            //layersコントロールにbaseMapsオブジェクトを設定して地図に追加
+            //コントロール内にプロパティ名が表示される
+            L.control.layers(baseMaps).addTo(map);
+
+            // 背景地図の初期選択の設定
+            pale.addTo(map);
+
+            // 描画機能設定
+            initDrawSetting();
+
+            // 凡例機能設定
+            initMapLegend(map);
+        }
+    </script>
+    <script src="map.js"></script>
+    <script src="tertiaryMesh.js"></script>
+    <script src="firePoint.js"></script>
+    <script src="building.js"></script>
+</head>
+<body onload="init()">
+    <div id="mapcontainer" style="position:absolute;top:0;left:0;right:0;bottom:0;"></div>
+</body>
+</html>
+

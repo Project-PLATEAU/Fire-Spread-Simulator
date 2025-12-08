@@ -1,0 +1,34 @@
+.disabled-draw-control {
+    cursor: default;
+    background-color: #f4f4f4;
+    color: #bbb;
+    filter: contrast(22%) brightness(157%);
+    pointer-events: none;
+}
+
+.leaflet-draw-toolbar a {
+    background-image: url('images/spritesheet.png');
+    background-repeat: no-repeat;
+    background-size: 300px 30px;
+    background-clip: padding-box;
+}
+
+.leaflet-retina .leaflet-draw-toolbar a {
+    background-image: url('images/spritesheet-2x.png');
+}
+
+.legend {
+    background: white;
+    padding: 6px 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+
+    .legend i {
+        width: 22px;
+        height: 15px;
+        float: left;
+        margin: 0px;
+        opacity: 0.5;
+        border: 1px solid #000000;
+    }

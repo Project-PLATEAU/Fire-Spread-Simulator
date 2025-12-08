@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CesiumLanguageWriter" Version="3.0.0" />
+    <PackageReference Include="GeoidHeightsDotNet" Version="1.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimulationCommonLibrary\SimulationCommonLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CoordinateSystemNumbers.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ElementAddSettting.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\images\coordinate_system_map.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- ここから↓↓ 外部ツールを実行フォルダに複製して配置 -->
+  <Target Name="CopyFromExternalTools1" AfterTargets="Build">
+    <ItemGroup>
+      <GeneFile Include="..\ExternalTools\GeneFile\\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(GeneFile)" DestinationFolder="$(OutputPath)\GeneFile\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="CopyFromExternalTools2" AfterTargets="Build">
+    <ItemGroup>
+      <SimFire Include="..\ExternalTools\SimFire_ForSourceFileCreator\\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SimFire)" DestinationFolder="$(OutputPath)\SimFire\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <!-- ここまで↑↑ -->
+
+</Project>

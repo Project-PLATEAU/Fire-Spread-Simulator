@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "dgSpecHash": "MUUYWiyim2Q=",
+  "success": true,
+  "projectFilePath": "C:\\延焼\\20251205ソース確認\\src\\SimulationSourceFileCreator\\SimulationSourceFileCreator.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\cesiumlanguagewriter\\3.0.0\\cesiumlanguagewriter.3.0.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.0\\communitytoolkit.mvvm.8.4.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\dotspatial.projections\\4.0.656\\dotspatial.projections.4.0.656.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\geoidheightsdotnet\\1.0.5\\geoidheightsdotnet.1.0.5.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\geojson\\2.3.1\\geojson.2.3.1.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\log4net\\3.1.0\\log4net.3.1.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.22\\microsoft.net.illink.tasks.8.0.22.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.4\\microsoft.netcore.platforms.3.1.4.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\newtonsoft.json\\13.0.4\\newtonsoft.json.13.0.4.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\stylecop.analyzers\\1.1.118\\stylecop.analyzers.1.1.118.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\system.configuration.configurationmanager\\4.5.0\\system.configuration.configurationmanager.4.5.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\system.drawing.common\\4.7.2\\system.drawing.common.4.7.2.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\system.security.accesscontrol\\4.5.0\\system.security.accesscontrol.4.5.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\system.security.cryptography.protecteddata\\4.5.0\\system.security.cryptography.protecteddata.4.5.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\system.security.permissions\\4.5.0\\system.security.permissions.4.5.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\system.security.principal.windows\\4.5.0\\system.security.principal.windows.4.5.0.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.22\\microsoft.netcore.app.ref.8.0.22.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\8.0.22\\microsoft.netcore.app.runtime.win-x64.8.0.22.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.22\\microsoft.windowsdesktop.app.ref.8.0.22.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\8.0.22\\microsoft.windowsdesktop.app.runtime.win-x64.8.0.22.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.22\\microsoft.aspnetcore.app.ref.8.0.22.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\8.0.22\\microsoft.aspnetcore.app.runtime.win-x64.8.0.22.nupkg.sha512",
+    "C:\\Users\\hirotada_yasui\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.22\\microsoft.netcore.app.host.win-x64.8.0.22.nupkg.sha512"
+  ],
+  "logs": []
+}
