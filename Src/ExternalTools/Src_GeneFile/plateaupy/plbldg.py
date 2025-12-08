@@ -1,0 +1,592 @@
+##from numpy.lib.polynomial import poly
+##KKC2025/12/08numpyのバージョンアップに対応
+from numpy import poly
+##from numpy.lib.twodim_base import tri
+##KKC2025/12/08numpyのバージョンアップに対応
+from numpy import poly
+from plateaupy.plobj import plmesh, plobj
+from plateaupy.plutils import *
+from plateaupy.ploptions import ploptions
+from plateaupy.thirdparty.earcutpython.earcut.earcut import earcut
+import numpy as np
+import copy
+import pickle
+import sys
+import os
+import cv2
+from lxml import etree
+import lxml
+
+_floorheight = 2	# fixed value, the height of 1 floor in meter.
+
+class Building:
+	def __init__(self):
+		self.id = None	# gml:id
+		self.attr = dict()
+		self.usage = None
+		self.measuredHeight = None
+		self.storeysAboveGround = None
+		self.storeysBelowGround = None
+		self.address = None
+		self.buildingDetails = dict()
+		self.extendedAttribute = dict()
+
+		self.igTimeSec = -1
+		self.burnoutTimeSec = -1
+
+		self.lod0RoofEdge = []
+		self.lod1Solid = []
+
+		#self.lod2Solid = []
+		# lod2MultiSurface
+		self.lod2ground = dict()
+		self.lod2roof = dict()
+		self.lod2wall = dict()
+		self.lod2window = dict()
+		self.partex = appParameterizedTexture()
+		# ''' [beg] add murakami
+		self.lod0FootPrint = []
+		"""lod0RoofEdge と lod0FootPrint は別々に取得するように修正
+		"""
+		self.smwindow = dict()
+		"""sim:Swindow の 方向と材質IDを polyid ごとに登録する
+		"""
+		self.smcityfiresimulation = dict()
+		"""sim:cityFireSimulation のデータを登録する
+		"""
+		self.yearOfConstruction = None
+		"""bldg:yearOfConstruction のデータを登録する
+		"""
+		# '''#[end] add murakami
+
+	def __str__(self):
+		return 'Building id={}\n\
+usage={}, measuredHeight={}, storeysAboveGround={}, storeysBelowGround={}\n\
+address={}\n\
+buildingDetails={}\n\
+extendedAttribute={}\n\
+attr={}'\
+		.format(self.id, self.usage, self.measuredHeight, self.storeysAboveGround, self.storeysBelowGround, \
+			self.address, self.buildingDetails, self.extendedAttribute, self.attr)
+	# get vertices, triangles from lod0RoofEdge
+	def getLOD0polygons(self, height=None):
+		vertices = None
+		triangles = None
+		if len(self.lod0RoofEdge) > 0:
+			vertices = []
+			for x in self.lod0RoofEdge[0]:
+				xx = copy.deepcopy(x)
+				if height is not None:
+					xx[2] = height
+				vertices.append( convertPolarToCartsian( *xx ) )
+			vertices = np.array(vertices)
+			res = earcut(np.array(vertices,dtype=np.int).flatten(), dim=3)
+			if len(res) > 0:
+				triangles = np.array(res).reshape((-1,3))
+		return vertices, triangles
+
+class appParameterizedTexture:
+	def __init__(self):
+		self.imageURI = None
+		self.targets = dict()
+	@classmethod
+	def search_list(cls, applist, polyid):
+		for app in applist:
+			if polyid in app.targets.keys():
+				return app
+		return None
+
+class plbldg(plobj):
+	def __init__(self,filename=None, options=ploptions()):
+		super().__init__()
+		self.kindstr = 'bldg'
+		self.buildings = []	# list of Building
+		self.center = []
+		if filename is not None:
+			self.loadFile(filename, options=options)
+
+	def loadFile(self,filename, options=ploptions()):
+		tree, root = super().loadFile(filename)
+		nsmap = self.removeNoneKeyFromDic(root.nsmap)
+
+		lowerCorner = [str2floats(v) for v in tree.xpath('/core:CityModel/gml:boundedBy/gml:Envelope/gml:lowerCorner', namespaces=nsmap)]
+		upperCorner = [str2floats(v) for v in tree.xpath('/core:CityModel/gml:boundedBy/gml:Envelope/gml:upperCorner', namespaces=nsmap)]
+		self.center = [(lowerCorner[0][p] + upperCorner[0][p])/2  for p in range(3)]
+
+		# scan appearanceMember
+		partex = []
+		for app in tree.xpath('/core:CityModel/app:appearanceMember/app:Appearance/app:surfaceDataMember/app:ParameterizedTexture', namespaces=nsmap):
+			par = appParameterizedTexture()
+			for at in app.xpath('app:imageURI', namespaces=nsmap):
+				par.imageURI = at.text
+			for at in app.xpath('app:target', namespaces=nsmap):
+				uri = at.attrib['uri']
+				colist = [str2floats(v).reshape((-1,2)) for v in at.xpath('app:TexCoordList/app:textureCoordinates', namespaces=nsmap)]
+				maxnum = max(map(lambda x:x.shape[0],colist))
+				for cidx,co in enumerate(colist):
+					last = co[-1].reshape(-1,2)
+					num = maxnum - co.shape[0]
+					if num > 0:
+						colist[cidx] = np.append(co,np.tile(co[-1].reshape(-1,2),(num,1)),axis=0)
+				par.targets[uri] = np.array(colist)
+			partex.append(par)
+
+		# scan cityObjectMember
+		blds = tree.xpath('/core:CityModel/core:cityObjectMember/bldg:Building', namespaces=nsmap)
+		for i, bld in enumerate(blds):
+
+			# if i != 31:
+			# 	continue
+
+			b = Building()
+			# gml:id
+			b.id = bld.attrib['{'+nsmap['gml']+'}id']
+			# stringAttribute
+			stringAttributes = bld.xpath('gen:stringAttribute', namespaces=nsmap)
+			for at in stringAttributes:
+				b.attr[at.attrib['name']] = at.getchildren()[0].text
+			# genericAttributeSet
+			genericAttributeSets = bld.xpath('gen:genericAttributeSet', namespaces=nsmap)
+			for at in genericAttributeSets:
+				vals = dict()
+				for ch in at.getchildren():
+					vals[ ch.attrib['name'] ] = ch.getchildren()[0].text
+				b.attr[at.attrib['name']] = vals
+			# usage
+			for at in bld.xpath('bldg:usage', namespaces=nsmap):
+				b.usage = at.text
+			# measuredHeight
+			for at in bld.xpath('bldg:measuredHeight', namespaces=nsmap):
+				b.measuredHeight = at.text
+			# storeysAboveGround
+			for at in bld.xpath('bldg:storeysAboveGround', namespaces=nsmap):
+				b.storeysAboveGround = at.text
+			# storeysBelowGround
+			for at in bld.xpath('bldg:storeysBelowGround', namespaces=nsmap):
+				b.storeysBelowGround = at.text
+			# address
+			try:	# there are 2 names: 'xAL' and 'xal'..
+				for at in bld.xpath('bldg:address/core:Address/core:xalAddress/xAL:AddressDetails/xAL:Address', namespaces=nsmap):
+					b.address = at.text
+			except lxml.etree.XPathEvalError as e:
+				for at in bld.xpath('bldg:address/core:Address/core:xalAddress/xal:AddressDetails/xal:Address', namespaces=nsmap):
+					b.address = at.text
+			# buildingDetails
+			for at in bld.xpath('uro:buildingDetails/uro:BuildingDetails', namespaces=nsmap):
+				for ch in at.getchildren():
+					tag = ch.tag
+					tag = tag[ tag.rfind('}')+1: ]
+					b.buildingDetails[tag] = ch.text
+			# extendedAttribute
+			for at in bld.xpath('uro:extendedAttribute/uro:KeyValuePair', namespaces=nsmap):
+				ch = at.getchildren()
+				b.extendedAttribute[ch[0].text] = ch[1].text
+
+			## sim:igTiemSec
+			#for at in bld.xpath('sim:cityFireSimulation/sim:CityFireSimulation/sim:igniteTimeSec', namespaces=nsmap):
+			#	b.igTimeSec = int(at.text)
+			## sim:burnoutTiemSec
+			#for at in bld.xpath('sim:cityFireSimulation/sim:CityFireSimulation/sim:burnoutTimeSec', namespaces=nsmap):
+			#	b.burnoutTimeSec = int(at.text)
+
+			# #''' [beg] add murakami
+			# yearOfConstruction
+			for at in bld.xpath('bldg:yearOfConstruction', namespaces=nsmap):
+				b.yearOfConstruction = at.text
+
+			'''
+			# lod0RoofEdge
+			vals = bld.xpath('bldg:lod0RoofEdge/gml:MultiSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+			# lod0RoofEdge
+			if len(vals) == 0:
+				vals = bld.xpath('bldg:lod0FootPrint/gml:MultiSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+			b.lod0RoofEdge = [str2floats(v).reshape((-1,3)) for v in vals]
+			'''
+			# lod0RoofEdge と lod0FootPrint を分けて取得する
+			# lod0RoofEdge
+			vals = bld.xpath('bldg:lod0RoofEdge/gml:MultiSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+			b.lod0RoofEdge = [str2floats(v).reshape((-1,3)) for v in vals] if len(vals) > 0 else []
+			# lod0FootPrint
+			vals = bld.xpath('bldg:lod0FootPrint/gml:MultiSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+			b.lod0FootPrint = [str2floats(v).reshape((-1,3)) for v in vals] if len(vals) > 0 else []
+			#   [end] add murakami
+
+			# lod1Solid
+			vals = bld.xpath('bldg:lod1Solid/gml:Solid/gml:exterior/gml:CompositeSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+			b.lod1Solid = [str2floats(v).reshape((-1,3)) for v in vals]
+			minheight = 0
+			if options.bHeightZero:
+				# calc min height
+				minheight = 10000
+				for x in b.lod1Solid:
+					if minheight > np.min(x[:,2]):
+						minheight = np.min(x[:,2])
+				if b.storeysBelowGround is not None:
+					minheight = minheight + (int(b.storeysBelowGround) * _floorheight)
+				if minheight == 10000:
+					minheight = 0
+				for x in b.lod1Solid:
+					x[:,2] -= minheight
+			# lod2Solid
+			#  nothing to do for parsing <bldg:lod2Solid>
+			# lod2MultiSurface : Ground, Roof, Wall
+			for bb in bld.xpath('bldg:boundedBy/bldg:GroundSurface/bldg:lod2MultiSurface/gml:MultiSurface/gml:surfaceMember/gml:Polygon', namespaces=nsmap):
+				polyid = '#' + bb.attrib['{'+nsmap['gml']+'}id']
+				vals = bb.xpath('gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+				surf = [str2floats(v).reshape((-1,3)) for v in vals]
+				if options.bHeightZero:
+					if minheight == 0:
+						# calc min height
+						minheight = 10000
+						for x in surf:
+							if minheight > np.min(x[:,2]):
+								minheight = np.min(x[:,2])
+						if b.storeysBelowGround is not None:
+							minheight = minheight + (int(b.storeysBelowGround) * _floorheight)
+						if minheight == 10000:
+							minheight = 0
+					for x in surf:
+						x[:,2] -= minheight
+				b.lod2ground[polyid] = surf
+				app = appParameterizedTexture.search_list( partex, polyid )
+				if app is not None:
+					if b.partex.imageURI is None:
+						b.partex = app
+					#elif b.partex.imageURI != app.imageURI:
+					#	print('error')
+			for bb in bld.xpath('bldg:boundedBy/bldg:RoofSurface/bldg:lod2MultiSurface/gml:MultiSurface/gml:surfaceMember/gml:Polygon', namespaces=nsmap):
+				polyid = '#' + bb.attrib['{'+nsmap['gml']+'}id']
+				vals = bb.xpath('gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+				surf = [str2floats(v).reshape((-1,3)) for v in vals]
+				if options.bHeightZero:
+					for x in surf:
+						x[:,2] -= minheight
+				b.lod2roof[polyid] = surf
+				app = appParameterizedTexture.search_list( partex, polyid )
+				if app is not None:
+					if b.partex.imageURI is None:
+						b.partex = app
+					#elif b.partex.imageURI != app.imageURI:
+					#	print('error')
+
+			for bw in bld.xpath('bldg:boundedBy/bldg:WallSurface', namespaces=nsmap):
+				bb = bw.xpath('bldg:lod2MultiSurface/gml:MultiSurface/gml:surfaceMember/gml:Polygon', namespaces=nsmap)
+				polyid = '#' + bb[0].attrib['{'+nsmap['gml']+'}id']
+				vals = bb[0].xpath('gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+				surf = [str2floats(v).reshape((-1,3)) for v in vals]
+				if options.bHeightZero:
+					for x in surf:
+						x[:,2] -= minheight
+				'''
+				for bb in bw.xpath('bldg:lod2MultiSurface/gml:MultiSurface/gml:surfaceMember/gml:Polygon', namespaces=nsmap):
+					polyid = '#' + bb.attrib['{'+nsmap['gml']+'}id']
+					vals = bb.xpath('gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+					surf = [str2floats(v).reshape((-1,3)) for v in vals]
+					if options.bHeightZero:
+						for x in surf:
+							x[:,2] -= minheight
+					hole = []
+				'''
+
+				hole = []
+				for op in bw.xpath('bldg:opening', namespaces=nsmap):
+					hole.append(len(surf[0]))
+					bb = op.xpath('sim:Swindow/sim:lod2MultiSurface/gml:MultiSurface/gml:surfaceMember/gml:Polygon', namespaces=nsmap)
+					polyid = '#' + bb[0].attrib['{'+nsmap['gml']+'}id']
+					vals = bb[0].xpath('gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+					surfw = [str2floats(v).reshape((-1,3)) for v in vals]
+					if options.bHeightZero:
+						for x in surfw:
+							x[:,2] -= minheight
+					surf[0] = np.append(surf[0], surfw[0], 0 )
+				b.lod2wall[polyid] = (surf, hole)
+				app = appParameterizedTexture.search_list( partex, polyid )
+				if app is not None:
+					if b.partex.imageURI is None:
+						b.partex = app
+			'''
+			for bb in bld.xpath('bldg:boundedBy/bldg:WallSurface/bldg:lod2MultiSurface/gml:MultiSurface/gml:surfaceMember/gml:Polygon', namespaces=nsmap):
+				polyid = '#' + bb.attrib['{'+nsmap['gml']+'}id']
+				vals = bb.xpath('gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+				surf = [str2floats(v).reshape((-1,3)) for v in vals]
+				if options.bHeightZero:
+					for x in surf:
+						x[:,2] -= minheight
+				b.lod2wall[polyid] = (surf, None)
+				app = appParameterizedTexture.search_list( partex, polyid )
+				if app is not None:
+					if b.partex.imageURI is None:
+						b.partex = app
+					#elif b.partex.imageURI != app.imageURI:
+					#	print('error')
+			'''
+			for bb in bld.xpath('bldg:boundedBy/bldg:WallSurface/bldg:opening/sim:Swindow/sim:lod2MultiSurface/gml:MultiSurface/gml:surfaceMember/gml:Polygon', namespaces=nsmap):
+				polyid = '#' + bb.attrib['{'+nsmap['gml']+'}id']
+				vals = bb.xpath('gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+				surf = [str2floats(v).reshape((-1,3)) for v in vals]
+				if options.bHeightZero:
+					for x in surf:
+						x[:,2] -= minheight
+				b.lod2window[polyid] = surf
+				app = appParameterizedTexture.search_list( partex, polyid )
+				if app is not None:
+					if b.partex.imageURI is None:
+						b.partex = app
+
+			# ''' [beg] add murakami
+			# 開口部の方向と材質IDの取得
+
+			for bb in bld.xpath('bldg:boundedBy/bldg:WallSurface/bldg:opening/sim:Swindow', namespaces=nsmap):
+				gmlply = bb.find('sim:lod2MultiSurface/gml:MultiSurface/gml:surfaceMember/gml:Polygon', namespaces=nsmap)
+				polyid = '#' + gmlply.attrib['{'+nsmap['gml']+'}id']
+				b.smwindow[polyid] = dict()
+
+				for nd in bb.xpath('./*', namespaces=nsmap):
+					if nd.prefix != '':
+						ps = nd.tag.rfind(r'}')
+						ky = f'{nd.prefix}:{nd.tag[ps+1:]}'
+					else:
+						ky = nd.tag
+					if ky.find('lod2MultiSurface') > 0:
+						continue
+
+					b.smwindow[polyid][ky] = nd.text
+
+			# 火災シミュレーションデータの取得
+			for bb in bld.xpath('sim:cityFireSimulation/sim:CityFireSimulation', namespaces=nsmap):
+				for nd in bb.xpath('./*', namespaces=nsmap):
+					if nd.prefix != '':
+						ps = nd.tag.rfind(r'}')
+						ky = f'{nd.prefix}:{nd.tag[ps+1:]}'
+					else:
+						ky = nd.tag
+
+					b.smcityfiresimulation[ky] = nd.text
+			# '''#[end] add murakami
+
+			self.buildings.append(b)
+
+		# vertices, triangles
+		# if (not options.bUseLOD2texture) or options.bUseLOD0:
+		mesh = plmesh()
+		for b in self.buildings:
+
+			# simfire result color
+			minTime = 0
+			maxTime = 6 * 3600 # 6 hours
+			if "sim:igniteTimeSec" in b.smcityfiresimulation :
+				igniteTimeSec = int(b.smcityfiresimulation["sim:igniteTimeSec"])
+			else:
+				igniteTimeSec = 0
+			if igniteTimeSec > 999999:
+				# gray
+				rr = gg = bb = 0.75
+			else:
+				# red
+				p = 6 * igniteTimeSec / maxTime + 2
+				_, p = divmod(p, 6)
+				if p > 3: p = 6 - p
+				rr = p - 1
+
+				# green
+				p = 6 * igniteTimeSec / maxTime + 0
+				_, p = divmod(p, 6)
+				if p > 3: p = 6 - p
+				gg = p - 1
+
+				# blue
+				p = 6 * igniteTimeSec / maxTime + 4
+				_, p = divmod(p, 6)
+				if p > 3: p = 6 - p
+				bb = p - 1
+
+			if options.bUseLOD2texture and (not options.bUseLOD0):
+				#mesh = plmesh()
+				pass
+			if options.bUseLOD0:
+				# LOD0
+				if options.simcolor:
+					col = [rr, gg, bb]
+				else:
+					col = [0.5, 0.5, 0.5]
+				#mesh = plmesh()
+				vertices, triangles = b.getLOD0polygons()
+				if vertices is not None and triangles is not None:
+					vstart = len(mesh.vertices)
+					mesh.vertices.extend( vertices )
+					mesh.triangles.extend( triangles + vstart )
+					for i in range(len(vertices)):
+						mesh.colors.append(col)
+			elif (b.lod2ground or b.lod2roof or b.lod2wall) and options.bUseLOD1 == False:
+				# LOD2
+				if options.bUseLOD2texture:
+					if b.partex.imageURI is not None:
+						# convert .tif into .png, because o3d.io.read_image() fails.
+						mesh.texture_filename = os.path.dirname( self.filename ) + '/' + b.partex.imageURI
+						img = cv2.imread(mesh.texture_filename)
+						mesh.texture_filename = options.texturedir + '/' + os.path.basename( mesh.texture_filename ) + '.png'
+						cv2.imwrite(mesh.texture_filename,img)
+				# ground
+				if not options.bUseLOD2texture:
+					#mesh = plmesh()
+					col = [0.3, 0.3, 0.3]
+				for key, value in b.lod2ground.items():
+
+					# vertices = [ convertPolarToCartsian( *x ) for x in value[0] ]
+
+					vertices = [ calc_xy(x[0], x[1], x[2], self.center[0], self.center[1] ) for x in value[0] ]
+
+					res = earcut(np.array(vertices,dtype=np.float64).flatten(), dim=3)
+					if len(res) > 0:
+						vstart = len(mesh.vertices)
+						mesh.vertices.extend( vertices )
+						triangles = np.array(res).reshape((-1,3))
+						mesh.triangles.extend( triangles + vstart )
+						for i in range(len(vertices)):
+							mesh.colors.append(col)
+						# texture
+						if options.bUseLOD2texture:
+							if key in b.partex.targets.keys():
+								mesh.triangle_uvs.extend( [ b.partex.targets[key][0,x] for x in triangles.reshape((-1)) ] )
+								mesh.triangle_material_ids.extend( [0]*len(triangles) )
+							else:	# add dummy uvs, material_ids    (The texture can not appear if the numbers of triangles are different between triangles and them.)
+								mesh.triangle_uvs.extend( [ np.zeros((2)) for x in range(len(triangles)*3) ] )
+								mesh.triangle_material_ids.extend( [0]*len(triangles) )
+				#if not options.bUseLOD2texture:
+				#	self.meshes.append(mesh)
+
+				# roof
+				if not options.bUseLOD2texture:
+					#mesh = plmesh()
+					if options.simcolor:
+						col = [rr, gg, bb]
+					else:
+						col = [1.0, 0.0, 0.0]
+				for key, value in b.lod2roof.items():
+					# vertices = [ convertPolarToCartsian( *x ) for x in value[0] ]
+
+					vertices = [ calc_xy(x[0], x[1], x[2], self.center[0], self.center[1] ) for x in value[0] ]
+
+					res = earcut(np.array(vertices,dtype=np.float64).flatten(), dim=3)
+					if len(res) > 0:
+						vstart = len(mesh.vertices)
+						mesh.vertices.extend( vertices )
+						triangles = np.array(res).reshape((-1,3))
+						mesh.triangles.extend( triangles + vstart )
+						for i in range(len(vertices)):
+							mesh.colors.append(col)
+						# texture
+						if options.bUseLOD2texture:
+							if key in b.partex.targets.keys():
+								mesh.triangle_uvs.extend( [ b.partex.targets[key][0,x] for x in triangles.reshape((-1)) ] )
+								mesh.triangle_material_ids.extend( [0]*len(triangles) )
+				#if not options.bUseLOD2texture:
+				#	self.meshes.append(mesh)
+
+				# wall
+				if not options.bUseLOD2texture:
+					#mesh = plmesh()
+					if options.simcolor:
+						col = [rr, gg, bb]
+					else:
+						col = [1.0, 1.0, 0.7]
+				for key, value in b.lod2wall.items():
+					# vertices = [ convertPolarToCartsian( *x ) for x in value[0] ]
+
+					vertices = [ calc_xy(x[0], x[1], x[2], self.center[0], self.center[1] ) for x in value[0][0] ]
+
+					reversedvertices = np.array(vertices,dtype=np.float64)
+					d = reversedvertices[0] - reversedvertices[2]
+					if d[0]*d[0] < d[1]*d[1]:
+						reversedvertices = reversedvertices[:,::-1]	# zy平面イヤーカット
+					else:
+						reversedvertices = reversedvertices[:,[2,0,1]] #zx平面イヤーカット
+					res = earcut(reversedvertices.flatten(), value[1], dim=3)
+					if len(res) > 0:
+						vstart = len(mesh.vertices)
+						mesh.vertices.extend( vertices )
+						triangles = np.array(res).reshape((-1,3))
+						mesh.triangles.extend( triangles + vstart )
+						for i in range(len(vertices)):
+							mesh.colors.append(col)
+						# texture
+						if options.bUseLOD2texture:
+							if key in b.partex.targets.keys():
+								mesh.triangle_uvs.extend( [ b.partex.targets[key][0,x] for x in triangles.reshape((-1)) ] )
+								mesh.triangle_material_ids.extend( [0]*len(triangles) )
+				#if not options.bUseLOD2texture:
+				#	self.meshes.append(mesh)
+
+				# window
+				if not options.bUseLOD2texture:
+					#mesh = plmesh()
+					if options.simcolor:
+						col = [rr, gg, bb]
+					else:
+						col = [0.4, 0.4, 0.6]
+				for key, value in b.lod2window.items():
+					# vertices = [ convertPolarToCartsian( *x ) for x in value[0] ]
+
+					vertices = [ calc_xy(x[0], x[1], x[2], self.center[0], self.center[1] ) for x in value[0] ]
+
+					reversedvertices = np.array(vertices,dtype=np.float64)
+					d = reversedvertices[0] - reversedvertices[2]
+					if d[0]*d[0] < d[1]*d[1]:
+						reversedvertices = reversedvertices[:,::-1]	# zy平面イヤーカット
+					else:
+						reversedvertices = reversedvertices[:,[2,0,1]] #zx平面イヤーカット
+					res = earcut(reversedvertices.flatten(), dim=3)
+					if len(res) > 0:
+						vstart = len(mesh.vertices)
+						mesh.vertices.extend( vertices )
+						triangles = np.array(res).reshape((-1,3))
+						mesh.triangles.extend( triangles + vstart )
+						for i in range(len(vertices)):
+							mesh.colors.append(col)
+						# texture
+						if options.bUseLOD2texture:
+							if key in b.partex.targets.keys():
+								mesh.triangle_uvs.extend( [ b.partex.targets[key][0,x] for x in triangles.reshape((-1)) ] )
+								mesh.triangle_material_ids.extend( [0]*len(triangles) )
+				#if not options.bUseLOD2texture:
+				#	self.meshes.append(mesh)
+
+			else:
+				# LOD1
+				if options.simcolor:
+					col = [rr, gg, bb]
+				else:
+					col = [0.2, 0.2, 0.7]
+				for plist in b.lod1Solid:
+					# vertices = [ convertPolarToCartsian( *x ) for x in plist ]
+
+					vertices = [ calc_xy(x[0], x[1], x[2], self.center[0], self.center[1] ) for x in plist ]
+
+					reversedvertices = np.array(vertices,dtype=np.float64)
+					zmax = np.max(reversedvertices[:,2])
+					zmin = np.min(reversedvertices[:,2])
+					if zmax > zmin:
+						d = reversedvertices[0] - reversedvertices[2]
+						if d[0]*d[0] < d[1]*d[1]:
+							reversedvertices = reversedvertices[:,::-1]	# zy平面イヤーカット
+						else:
+							reversedvertices = reversedvertices[:,[2,0,1]] #zx平面イヤーカット
+						res = earcut(reversedvertices.flatten(), dim=3)
+					else:
+						res = earcut(np.array(vertices,dtype=np.float64).flatten(), dim=3)
+					if len(res) > 0:
+						vstart = len(mesh.vertices)
+						mesh.vertices.extend( vertices )
+						triangles = np.array(res).reshape((-1,3))
+						mesh.triangles.extend( triangles + vstart )
+						for i in range(len(vertices)):
+							mesh.colors.append(col)
+						# texture
+						if options.bUseLOD2texture:	# add dummy uvs, material_ids    (The texture can not appear if the numbers of triangles are different between triangles and them.)
+							mesh.triangle_uvs.extend( [ np.zeros((2)) for x in range(len(triangles)*3) ] )
+							mesh.triangle_material_ids.extend( [0]*len(triangles) )
+			#if options.bUseLOD2texture:
+			#	self.meshes.append(mesh)
+		#if options.bUseLOD0:#not options.bUseLOD2texture:
+		self.meshes.append(mesh)
+
