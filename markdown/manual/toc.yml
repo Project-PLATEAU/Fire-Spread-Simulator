@@ -3,12 +3,14 @@
 - name: 利用を開始する
   items:
   - name: 環境構築手順書
-    href: devMan.md
+    items:
+    - name: 利用者向け
+      href: devMan1.md
+    - name: 開発者向け
+      href: devMan2.md
   - name: 操作マニュアル
     items:
     - name: ファイル作成ツール
       href: userMan1.md
     - name: 条件設定支援ツール
       href: userMan2.md
-- name: ソースファイルのビルド手順（開発者向け）
-  href: devMan2.md

@@ -16,7 +16,7 @@
 
 # 2 開発環境
 
-本システムはMicrosoft Visual Studio 2022 を統合開発環境（IDE）として使用して開発しました。以下に主な開発環境の構成を示す。
+本システムはMicrosoft Visual Studio 2022 を統合開発環境（IDE）として使用して開発しました。以下に主な開発環境の構成を示します。
 
 
 | 項目 | 内容 |
@@ -40,40 +40,43 @@
 ## 3.1ダウンロード・展開
 
 1.	[こちら](https://github.com/Project-PLATEAU/Fire-Spread-Simulator/Src/)
-からソースコードをダウンロードします。
+に格納されているソースコード一式を任意のフォルダに展開します。
 
+    ※以降の手順のパスは、すべてこのフォルダを起点（ルート）とした相対パスで記載します。
 
 2.	国総研より配布を受けたエンジン「simFireMP64.exe」を以下の2か所に配置します。
 
- - ExternalTools\SimFire_ForSourceFileCreator
- - ExternalTools\SimFire_ForSupportTool
+ - \ExternalTools\SimFire_ForSourceFileCreator
+ - \ExternalTools\SimFire_ForSupportTool
+
+
 
 ## 3.2ファイル作成ツール・条件設定支援ツール・GISデータ変換ツールのビルド
 
 > [!NOTE]
-> - リリース用ビルド（実行ファイルの発行）は、「ReleasePackage」フォルダに格納されているバッチを実行することにより、行います。
-> - 実行ファイルの発行は VisualStudio の発行コマンドを使用しているため、「2 開発環境」に示すVisualStudio でソリューションのビルドができることが前提条件となります。
+> - リリース用ビルド（実行ファイルの発行）は、「ReleasePackage」フォルダに格納されているバッチを実行することにより、行います
+> - 実行ファイルの発行は VisualStudio の発行コマンドを使用しているため、「2 開発環境」に示すVisualStudio でソリューションのビルドができることが前提条件となります
 > - フォルダ構成はアプリケーションで使用するための構成となっており、変更すると動作しなくなる可能性があります
 
 
 ### 1.GISデータ変換ツールの実行ファイルの発行
-以下のバッチファイルを実行する
+以下のバッチファイルを実行します。
 
 ```Batch
-ReleasePackage\SimulationResultFileConverter_publish.bat
+\ReleasePackage\SimulationResultFileConverter_publish.bat
 ```
 **バッチの処理内容**
 - GISデータ変換ツールの実行ファイル（SimulationResultFileConverter.exe）の発行
 
-※GISデータ変換ツールは通常は単体では実行しないため使用しない想定。条件設定支援ツールの実行ファイルの発行バッチで所定のフォルダに発行を行っている。
+※GISデータ変換ツールは通常は単体では実行しないため使用しない想定です。条件設定支援ツールの実行ファイルの発行バッチで所定のフォルダに発行を行っています。
 
 
 
 ### 2.ファイル作成ツールの実行ファイルの発行バッチ
-以下のバッチファイルを実行する
+以下のバッチファイルを実行します。
 
 ```Batch
-ReleasePackage\SimulationSourceFileCreator_publish.bat
+\ReleasePackage\SimulationSourceFileCreator_publish.bat
 ```
 **バッチの処理内容**
 - ファイル作成ツールの実行ファイル（SimulationSourceFileCreator.exe）の発行
@@ -82,10 +85,10 @@ ReleasePackage\SimulationSourceFileCreator_publish.bat
 
 
 ### 3.条件設定支援ツールの実行ファイルの発行バッチ
-以下のバッチファイルを実行する
+以下のバッチファイルを実行します。
 
 ```Batch
-ReleasePackage\SimulationSupportTool_publish.bat
+\ReleasePackage\SimulationSupportTool_publish.bat
 ```
 **バッチの処理内容**
 - 条件設定支援ツールの実行ファイル（SimulationSupportTool.exe）の発行
@@ -111,7 +114,7 @@ ReleasePackage\SimulationSupportTool_publish.bat
 
 
 
-以下のcondaコマンドで仮想環境を構築し、外部ライブラリを導入する。
+以下のcondaコマンドで仮想環境を構築し、外部ライブラリを導入します。
 
 1.	仮想環境(env_r5nilim) を構築
      ```Batch
@@ -148,7 +151,7 @@ ReleasePackage\SimulationSupportTool_publish.bat
      ```
 
 
-    5.追加のライブラリを導入する<br>
+    5.追加のライブラリを導入<br>
     ※お使いの環境次第では、以下のライブラリの追加導入が必要な場合があります。
 
     ```Batch
@@ -160,7 +163,7 @@ ReleasePackage\SimulationSupportTool_publish.bat
 ### 2.pyinstallerによるexeファイル作成
 
 
-以下のcondaコマンドでexeファイルを作成する。
+以下のcondaコマンドでexeファイルを作成します。
 
 
 1.	pyinstallerのインストール
@@ -186,7 +189,7 @@ ReleasePackage\SimulationSupportTool_publish.bat
     ```
 
 
-     distフォルダにexe、カレントディレクトリにspecファイルが作成される
+     ※以下の通りdistフォルダにexe、カレントディレクトリにspecファイルが作成される
 
     ```Batch
     createFile（カレントディレクトリ）
@@ -222,7 +225,7 @@ ReleasePackage\SimulationSupportTool_publish.bat
 
 8. cfgファイルの配置
 
-    プログラムの実行に必要な「plateau_conv.cfg」を配置する
+    プログラムの実行に必要な「plateau_conv.cfg」を配置
     ```Batch
     createFile（カレントディレクトリ）
     ├dist
@@ -236,9 +239,3 @@ ReleasePackage\SimulationSupportTool_publish.bat
 
     ※ここでは作成されるフォルダ・ファイル、および追加するフォルダ・ファイルのみ記載
     ```
-
-
-
-
-
-

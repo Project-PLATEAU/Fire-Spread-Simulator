@@ -22,10 +22,10 @@
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "manual/devMan.md",
+      "source_relative_path": "manual/devMan1.md",
       "output": {
         ".html": {
-          "relative_path": "manual/devMan.html"
+          "relative_path": "manual/devMan1.html"
         }
       },
       "version": ""
@@ -339,16 +339,6 @@
       "output": {
         "resource": {
           "relative_path": "resources/userMan1/4-2-2.png"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "resources/userMan1/hoge",
-      "output": {
-        "resource": {
-          "relative_path": "resources/userMan1/hoge"
         }
       },
       "version": ""
