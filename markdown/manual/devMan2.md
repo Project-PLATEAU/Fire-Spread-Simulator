@@ -211,7 +211,7 @@
     hiddenimports=['osgeo._gdal']
     ```
 
-6. 今度はspecファイルを使用してpyinstallerコマンドでexeを作成
+6. specファイルを使用してpyinstallerコマンドでexeを作成
     ```Batch
     (env_r5nilim) > pyinstaller plateau_conv.spec
     ```
