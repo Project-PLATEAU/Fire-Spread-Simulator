@@ -1,9 +1,0 @@
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\SimulationSourceFileCreator.pdb
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\log4net.config
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\D3DCompiler_47_cor3.dll
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\PenImc_cor3.dll
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\PresentationNative_cor3.dll
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\vcruntime140_cor3.dll
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\wpfgfx_cor3.dll
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\SimulationCommonLibrary.pdb
-C:\延焼\20251205ソース確認\src\ReleasePackage\SimulationSourceFileCreator\SimulationSourceFileCreator.exe
