@@ -35,7 +35,7 @@
         /// <summary>
         /// 頂点数0件の平面形状種があるかどうか
         /// </summary>
-        internal bool HasZeroPointShape { get; set; }
+        internal bool HasZeroPointShape => this.BldgShapes.Any(s => s.PointCount == 0);
 
         /// <summary>
         /// 建物情報を作成します。
@@ -179,35 +179,15 @@
         private readonly int topHeightIndex = 2;    // 2 平面形状上端高さ
         private readonly int floorNumIndex = 4;     // 4 階数
 
-        private int pointCount = -1;
-
-        /// <summary>
-        /// 0 頂点数
-        /// </summary>
-        internal int PointCount
-        {
-            get
-            {
-                if (-1 < this.pointCount)
-                {
-                    return this.pointCount;
-                }
-
-                var words = this.LineData.Split(',');
-                if (words.Length < this.pointCountIndex + 1
-                    || !int.TryParse(words[this.pointCountIndex], out this.pointCount))
-                {
-                    this.pointCount = -1;
-                }
-
-                return this.pointCount;
-            }
-        }
-
         /// <summary>
         /// 行データ
         /// </summary>
         internal string LineData { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 0 頂点数
+        /// </summary>
+        internal int PointCount => BldgSmfrdat.GetItemValue<int>(this.LineData, this.pointCountIndex);
 
         /// <summary>
         /// 頂点リスト
@@ -264,7 +244,7 @@
         {
             var lowerEnd = BldgSmfrdat.GetItemValue<double>(this.LineData, this.bottomHeightIndex);
 
-            lowerEnd -= 0.03d;
+            lowerEnd += 0.3d;
 
             this.LineData = BldgSmfrdat.SetItemValue(this.LineData, this.bottomHeightIndex, lowerEnd.ToString());
         }
@@ -318,21 +298,12 @@
         }
 
         /// <summary>
-        /// 子要素の平面形状種の符号付き面積を取得します。
+        /// 平面形状種の頂点を削除（0件）にします。
         /// </summary>
-        /// <returns>符号付き面積</returns>
-        internal double CalculatePolygonOrientation()
+        internal void ClearBldgShapePoints()
         {
-            double sum = 0;
-            for (int i = 0; i < this.BldgShapePoints.Count; i++)
-            {
-                var p1 = this.BldgShapePoints[i];
-                var p2 = this.BldgShapePoints[(i + 1) % this.BldgShapePoints.Count]; // 次の頂点（リストの最後と最初を繋ぐ）
-
-                sum += (p2.X - p1.X) * (p2.Y + p1.Y);
-            }
-
-            return sum;
+            this.LineData = BldgSmfrdat.SetItemValue(this.LineData, this.pointCountIndex, "0");
+            this.BldgShapePoints.Clear();
         }
     }
 
@@ -345,6 +316,7 @@
         private readonly int yIndex = 1;        // 1 座標Y
         private readonly int bottomZIndex = 2;  // 2 下座標Z
         private readonly int topZIndex = 3;     // 3 上座標Z
+        private readonly int roopFlagIndex = 4; // ループ開始フラグ
 
         /// <summary>
         /// 行データ
@@ -397,6 +369,15 @@
         internal void SetTopZ(double topHeight)
         {
             this.LineData = BldgSmfrdat.SetItemValue(this.LineData, this.topZIndex, topHeight.ToString());
+        }
+
+        /// <summary>
+        /// ループ開始フラグを設定します。
+        /// </summary>
+        /// <param name="roopFlag">ループ開始頂点は1、その他は0</param>
+        internal void SetRoopFlag(int roopFlag)
+        {
+            this.LineData = BldgSmfrdat.SetItemValue(this.LineData, this.roopFlagIndex, roopFlag.ToString());
         }
     }
 

@@ -215,7 +215,7 @@ public class IntermediateCsvFileCreatorTest
     [DataRow("不明", "不明", "3", "不明", "不明",   "5",      "5")]
     public void SupplementKOZOTest(string taikaValue, string tatemonoValue, string kaisuValue, string nobeyukaValue, string kenchikuValue, string fireproofStructureType, string expectedKOZOValue)
     {
-        var kozoSetting = new ElementAddSetttingSupplementItem()
+        var kozoSetting = new ElementAddSettingSupplementItem()
         {
             Taika =    new GetElement() { TargetType = 3, FixedValue = taikaValue, },
             Tatemono = new GetElement() { TargetType = 3, FixedValue = tatemonoValue, },
@@ -270,7 +270,7 @@ public class IntermediateCsvFileCreatorTest
     [DataRow("不明", "不明", "")]
     public void SupplementMOKUTest(string tatemonoValue, string kozoValue, string expectedMOKUValue)
     {
-        var mokuSetting = new ElementAddSetttingSupplementItem()
+        var mokuSetting = new ElementAddSettingSupplementItem()
         {
             Tatemono = new GetElement()
             {
@@ -318,7 +318,7 @@ public class IntermediateCsvFileCreatorTest
     [DataRow("不明", "22")]
     public void SupplementYOTOTest(string mokutekiValue, string expectedYOTOValue)
     {
-        var yotoSetting = new ElementAddSetttingSupplementItem()
+        var yotoSetting = new ElementAddSettingSupplementItem()
         {
             Mokuteki = new GetElement()
             {

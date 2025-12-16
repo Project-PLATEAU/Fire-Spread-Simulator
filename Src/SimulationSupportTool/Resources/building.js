@@ -8,7 +8,7 @@ var buildingLayerDict = {};
 // 構造タイプに対応する配色
 function getBuildingColor(type) {
     return type === '1'
-        ? "#7F7FFF"
+        ? "#1D1DFF"
         : type === '2'
             ? "#AFAFFF"
             : type === '3'
@@ -30,7 +30,7 @@ function geoJsonBuildingLayerStyle(feature) {
         opacity: 1,
         weight: 1,
         fillColor: getBuildingColor(feature.properties.fireproofStructureType),
-        fillOpacity: 0.5,
+        fillOpacity: 0.7,
         fill: true,
     };
 }

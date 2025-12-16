@@ -26,7 +26,7 @@ namespace SimulationSourceFileCreator.Controller
         /// <param name="bldgAboveFloorNumDict">建物IDと地上階数のディクショナリ（key = bldgId、vaule = 地上階数）</param>
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>成否</returns>
-        internal bool CreateBuldingGeojsonFile(XmlNodeList? buildingNodes, XmlNamespaceManager xmlnsManager, string inputFilePath, string outputFilePath, ElementAddSettting setting, Dictionary<string, int> bldgAboveFloorNumDict, CancellationTokenSource cancelToken)
+        internal bool CreateBuldingGeojsonFile(XmlNodeList? buildingNodes, XmlNamespaceManager xmlnsManager, string inputFilePath, string outputFilePath, ElementAddSetting setting, Dictionary<string, int> bldgAboveFloorNumDict, CancellationTokenSource cancelToken)
         {
             var features = new List<Feature>();
 
@@ -161,7 +161,7 @@ namespace SimulationSourceFileCreator.Controller
         /// <param name="setting">要素追加設定</param>
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>成否</returns>
-        internal bool CreateBuldingCzmlFile(XmlNodeList? buildingNodes, XmlNamespaceManager xmlnsManager, string inputFilePath, string outputFilePath, ElementAddSettting setting, CancellationTokenSource cancelToken)
+        internal bool CreateBuldingCzmlFile(XmlNodeList? buildingNodes, XmlNamespaceManager xmlnsManager, string inputFilePath, string outputFilePath, ElementAddSetting setting, CancellationTokenSource cancelToken)
         {
             using (var stringWriter = new StringWriter())
             {

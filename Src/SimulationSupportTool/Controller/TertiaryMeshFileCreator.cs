@@ -67,7 +67,8 @@ namespace SimulationSupportTool.Controller
             }
 
             // 作業フォルダ作成（既にあれば何もしない）
-            var outputFolder = "workspace";
+            var currentDir = Directory.GetCurrentDirectory();
+            var outputFolder = Path.Combine(currentDir, "workspace");
             Directory.CreateDirectory(outputFolder);
 
             var meshGeojson = JsonConvert.SerializeObject(new FeatureCollection(meshFeatures));

@@ -21,7 +21,7 @@
     <EmbeddedResource Include="Resources\CoordinateSystemNumbers.xml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ElementAddSettting.xml">
+    <EmbeddedResource Include="Resources\ElementAddSetting.xml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

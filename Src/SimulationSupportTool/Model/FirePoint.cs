@@ -80,7 +80,7 @@ namespace SimulationSupportTool.Model
         /// 経緯度が同じかどうかを判定します。
         /// </summary>
         /// <param name="other">比べる対象</param>
-        /// <returns>true = 同じ、false = 異なる</returns>
+        /// <returns>true：同じ、false：異なる</returns>
         internal bool EqualsCoordinate(FirePoint other)
         {
             if (this.Coordinate == null || this.Coordinate.Length != 2)

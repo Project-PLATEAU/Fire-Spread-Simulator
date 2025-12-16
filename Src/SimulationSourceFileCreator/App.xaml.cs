@@ -58,7 +58,7 @@ namespace SimulationSourceFileCreator
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             // 設定ファイルの複製（既にあれば何もしない）
-            ElementAddSettting.Initialize(ConstSystemPath.SettingFilePath);
+            ElementAddSetting.Initialize(ConstSystemPath.SettingFilePath);
 
             // workspaceフォルダの作成（既にあれば何もしない）
             Directory.CreateDirectory(ConstSystemPath.WorkspaceCSVFolderPath);

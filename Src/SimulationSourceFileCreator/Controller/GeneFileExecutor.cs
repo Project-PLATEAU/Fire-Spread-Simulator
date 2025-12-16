@@ -144,6 +144,13 @@ namespace SimulationSourceFileCreator.Controller
             // gmlファイルが残っていると変換の対象になってしまうためクリーンアップを行う
             DirectoryUtility.CleanupDirectory(this.InFolderPath, "*.gml");
 
+            // 残り続けディスク容量を圧迫するおそれがあるためクリーンアップを行う
+            var cachedFolderPath = Path.Combine(this.WorkingFolderPath, "cached");
+            if (Directory.Exists(cachedFolderPath))
+            {
+                DirectoryUtility.CleanupDirectory(cachedFolderPath, "*.pkl");
+            }
+
             // 入力ファイルの複製（ファイル名は「数値8桁_」で始まる必要がある）
             var targetFilePath = Path.Combine(this.InFolderPath, $"{meshNumer}_bldg.gml");
             File.Copy(gmlFilePath, targetFilePath, true);

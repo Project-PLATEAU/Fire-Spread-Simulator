@@ -15,7 +15,7 @@ namespace SimulationSourceFileCreator.Model
         /// <summary>
         /// 要素追加設定ファイルパス
         /// </summary>
-        internal static string SettingFilePath => Path.Combine(CurrentDirectory, "config", "ElementAddSettting.xml");
+        internal static string SettingFilePath => Path.Combine(CurrentDirectory, "config", "ElementAddSetting.xml");
 
         /// <summary>
         /// 作業フォルダパス（CSV）

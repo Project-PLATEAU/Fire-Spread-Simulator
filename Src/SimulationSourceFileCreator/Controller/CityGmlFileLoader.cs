@@ -121,7 +121,7 @@ namespace SimulationSourceFileCreator.Controller
         /// <param name="xmlnsManager">名前空間マネージャ</param>
         /// <param name="setting">要素追加設定</param>
         /// <returns>成否</returns>
-        internal static bool CheckGetSettingPrefix(XmlNamespaceManager xmlnsManager, ElementAddSettting setting)
+        internal static bool CheckGetSettingPrefix(XmlNamespaceManager xmlnsManager, ElementAddSetting setting)
         {
             var isCheckOK = true;
             isCheckOK &= CheckPrefix(xmlnsManager, setting.BldgId);
@@ -140,6 +140,50 @@ namespace SimulationSourceFileCreator.Controller
             isCheckOK &= CheckPrefix(xmlnsManager, setting.YOTO.Mokuteki);
 
             return isCheckOK;
+        }
+
+        /// <summary>
+        /// XMLドキュメントと名前空間マネージャに指定の名前空間を追加します。（既にある場合は何もしません）
+        /// </summary>
+        /// <param name="xmlDoc">XMLドキュメント</param>
+        /// <param name="xmlnsManager">名前空間マネージャ</param>
+        /// <param name="prefix">プレフィックス</param>
+        /// <param name="namespaceUri">uri</param>
+        /// <param name="namespaceXsd">xsd</param>
+        /// <returns>追加したかどうか、uri（既にプレフィックスがある場合は既存のuri）</returns>
+        internal static (bool added, string uri) CheckAndAddNamespace(XmlDocument xmlDoc, XmlNamespaceManager xmlnsManager, string prefix, string namespaceUri, string namespaceXsd)
+        {
+            // 指定の名前空間が存在するかを確認する。
+            var uri = xmlDoc.DocumentElement.GetAttribute($"xmlns:{prefix}");
+
+            if (!string.IsNullOrEmpty(uri))
+            {
+                // 存在する場合　→　既存のuriを返す
+                return (false, uri);
+            }
+
+            // 存在しない場合　→　追加
+            xmlDoc.DocumentElement.SetAttribute($"xmlns:{prefix}", namespaceUri);
+
+            // 順番を整える為（一番最後にする為）に一旦削除して追加
+            var orgLocationPass = xmlDoc.DocumentElement.GetAttribute("xsi:schemaLocation");
+            xmlDoc.DocumentElement.RemoveAttribute("xsi:schemaLocation");
+
+            // prefixはないがLocationPassは有る場合がある為、無い場合にのみ追加するようにする
+            if (string.IsNullOrEmpty(namespaceXsd) || orgLocationPass.Contains(namespaceUri))
+            {
+                // 有る場合　→　そのまま追加
+                xmlDoc.DocumentElement.SetAttribute("xsi:schemaLocation", $"{orgLocationPass}");
+            }
+            else
+            {
+                // 無い場合　→　追記して追加
+                xmlDoc.DocumentElement.SetAttribute("xsi:schemaLocation", $"{orgLocationPass} {namespaceUri} {namespaceXsd}");
+            }
+
+            xmlnsManager.AddNamespace(prefix, namespaceUri);
+
+            return (true, namespaceUri);
         }
 
         /// <summary>
@@ -445,9 +489,9 @@ namespace SimulationSourceFileCreator.Controller
             }
 
             var prefix = getSetting.TagName.Substring(0, index);
-            var url = xmlnsManager.LookupNamespace(prefix);
+            var uri = xmlnsManager.LookupNamespace(prefix);
 
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(uri))
             {
                 return false;
             }

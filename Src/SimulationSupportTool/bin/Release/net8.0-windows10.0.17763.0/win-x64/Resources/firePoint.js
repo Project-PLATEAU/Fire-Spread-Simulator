@@ -38,7 +38,7 @@ function initDrawSetting() {
     L.drawLocal.draw.handlers.marker.tooltip.start = '出火点の位置をクリックしてください';
 
     // 編集
-    L.drawLocal.edit.toolbar.buttons.edit = '編集';
+    L.drawLocal.edit.toolbar.buttons.edit = '出火点の編集';
     L.drawLocal.edit.toolbar.actions.save.text = '保存';
     L.drawLocal.edit.toolbar.actions.save.title = '編集を確定する';
     L.drawLocal.edit.toolbar.actions.cancel.text = '中止';
@@ -52,7 +52,7 @@ function initDrawSetting() {
         setFirePointEditingStatus(true);
 
         if (firePointMaxCount <= editableLayers.getLayers().length) {
-            showWarningMessageBox('出火点を設定できません。\r\n最大件数（' + firePointMaxCount + '件）に達しています。');
+            showWarningMessageBox('出火点を設定できません。\r\n設定可能最大件数（' + firePointMaxCount + '件）に達しています。');
             map.removeControl(drawControl);
             map.addControl(drawControl);
         }
@@ -69,7 +69,7 @@ function initDrawSetting() {
             createdFirePointMaker(layer);
 
             if (firePointMaxCount <= editableLayers.getLayers().length) {
-                showInformationMessageBox('出火点の設定可能最大件数（' + firePointMaxCount + '件）に達しました。');
+                showInformationMessageBox('出火点の\r\n設定可能最大件数（' + firePointMaxCount + '件）に達しました。');
             }
         }
     });

@@ -50,7 +50,7 @@ function initMapLegend(map) {
         div.innerHTML += '<div>建物データ凡例</div>'
             + '<table>'
             + '<tbody>'
-            + '<tr><td><i style="background: #7F7FFF"/></td><td>1 耐火造</td></tr>'
+            + '<tr><td><i style="background: #1D1DFF"/></td><td>1 耐火造</td></tr>'
             + '<tr><td><i style="background: #AFAFFF"/></td><td>2 準耐火造</td></tr>'
             + '<tr><td><i style="background: #FFFFAF"/></td><td>3 防火造</td></tr>'
             + '<tr><td><i style="background: #FFFFFF"/></td><td>4 準防火造</td></tr>'
@@ -73,5 +73,5 @@ function initMapLegend(map) {
             legend.addTo(map);
             legendVisible = true;
         }
-    }).addTo(map);
+    }, '凡例を表示').addTo(map);
 }

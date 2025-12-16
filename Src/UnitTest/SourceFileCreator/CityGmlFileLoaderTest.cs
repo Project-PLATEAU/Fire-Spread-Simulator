@@ -21,7 +21,7 @@ public class CityGmlFileLoaderTest
     /// <param name="fileName">ファイル名</param>
     /// <param name="expectedValid">期待値：ファイルが有効かどうか</param>
     /// <param name="expectedMeshNumer">期待値：メッシュ番号</param>
-    [TestMethod("CityGmlファイルの読み込みテスト")]
+    [TestMethod]
     [DataRow(null,                 false, null, DisplayName = "パスがnull")]
     [DataRow("",                   false, null, DisplayName = "パスが空文字")]
     [DataRow("53395313_dummy.gml", false, null, DisplayName = "ファイルがない")]
@@ -71,32 +71,24 @@ public class CityGmlFileLoaderTest
     }
 
     /// <summary>
-    /// <see cref="CityGmlFileLoader.CheckPrefix"/>のテスト
+    /// <see cref="CityGmlFileLoader.CheckAndAddNamespace"/>のテスト
     /// </summary>
-    /// <param name="tagName">要素名</param>
-    /// <param name="expectedCheckOK">期待値：プレフィックスがあるかどうか</param>
+    /// <param name="prefix">プレフィックス</param>
+    /// <param name="expectedAdded">期待値：追加したかどうか</param>
+    /// <param name="expectedUri">期待値：uri</param>
     [TestMethod]
-    [DataRow("gen:test", true)]
-    [DataRow("GEN:test", false)]
-    [DataRow("aaa:test", false)]
-    [DataRow(":test",    false)]
-    [DataRow("test",     true)]
-    [DataRow("",         true)]
-    public void CheckPrefixTest(string tagName, bool expectedCheckOK)
+    [DataRow("brid", false, "http://www.opengis.net/citygml/bridge/2.0")]
+    [DataRow("test", true,  "testuri")]
+    public void CheckAndAddNamespaceTest(string prefix, bool expectedAdded, string expectedUri)
     {
-        var filePath = Path.Combine(TestDataFolder, "53395313_要素取得テスト用.gml");
-        var isSuccess = CityGmlFileLoader.Load(filePath, out _, out var xmlnsManager, out _, out _);
+        var filePath = Path.Combine(TestDataFolder, "53395313.gml");
+        var isSuccess = CityGmlFileLoader.Load(filePath, out var xmlDoc, out var xmlnsManager, out _, out _);
         Assert.IsTrue(isSuccess);
 
-        var getSetting = new GetElement()
-        {
-            TagName = tagName,
-        };
+        var (added, uri) = CityGmlFileLoader.CheckAndAddNamespace(xmlDoc, xmlnsManager, prefix, "testuri", "testxsd");
 
-        var method = typeof(CityGmlFileLoader).GetMethod("CheckPrefix", BindingFlags.Static | BindingFlags.NonPublic);
-        var result = (bool?)method.Invoke(null, [xmlnsManager, getSetting]);
-
-        Assert.AreEqual(expectedCheckOK, result);
+        Assert.AreEqual(expectedAdded, added);
+        Assert.AreEqual(expectedUri, uri);
     }
 
     /// <summary>
@@ -145,5 +137,34 @@ public class CityGmlFileLoaderTest
 
         var tagValue = CityGmlFileLoader.GetTagValue(buildingNodes[0], xmlnsManager, getSetting);
         Assert.AreEqual(expectedValue, tagValue);
+    }
+
+    /// <summary>
+    /// <see cref="CityGmlFileLoader.CheckPrefix"/>のテスト
+    /// </summary>
+    /// <param name="tagName">要素名</param>
+    /// <param name="expectedCheckOK">期待値：プレフィックスがあるかどうか</param>
+    [TestMethod]
+    [DataRow("gen:test", true)]
+    [DataRow("GEN:test", false)]
+    [DataRow("aaa:test", false)]
+    [DataRow(":test", false)]
+    [DataRow("test", true)]
+    [DataRow("", true)]
+    public void CheckPrefixTest(string tagName, bool expectedCheckOK)
+    {
+        var filePath = Path.Combine(TestDataFolder, "53395313.gml");
+        var isSuccess = CityGmlFileLoader.Load(filePath, out _, out var xmlnsManager, out _, out _);
+        Assert.IsTrue(isSuccess);
+
+        var getSetting = new GetElement()
+        {
+            TagName = tagName,
+        };
+
+        var method = typeof(CityGmlFileLoader).GetMethod("CheckPrefix", BindingFlags.Static | BindingFlags.NonPublic);
+        var result = (bool?)method.Invoke(null, [xmlnsManager, getSetting]);
+
+        Assert.AreEqual(expectedCheckOK, result);
     }
 }

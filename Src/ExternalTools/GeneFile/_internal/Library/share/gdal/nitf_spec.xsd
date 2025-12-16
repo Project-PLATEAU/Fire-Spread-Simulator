@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <!--
 /******************************************************************************
+ * $Id$
+ *
  * Project:  NITF Library
  * Purpose:  Schema of description of NITF TREs
  * Author:   Even Rouault, <even dot rouault at spatialys.com>
@@ -8,7 +10,23 @@
  **********************************************************************
  * Copyright (c) 2011, Even Rouault
  *
- * SPDX-License-Identifier: MIT
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -55,17 +73,6 @@
                     <xs:attribute name="maxlength" type="xs:integer" use="optional"/>
                 </xs:complexType>
             </xs:element>
-
-            <!-- definition of fields in data section of DES -->
-            <xs:element name="data_fields" minOccurs="0">
-                <xs:complexType>
-                    <xs:group ref="itemType"/>
-                    <xs:attribute name="name" type="xs:string"/>
-                    <xs:attribute name="length" type="positiveInteger" use="optional"/>
-                    <xs:attribute name="minlength" type="xs:integer" use="optional"/>
-                    <xs:attribute name="maxlength" type="xs:integer" use="optional"/>
-                </xs:complexType>
-            </xs:element>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string"/>
     </xs:complexType>
@@ -102,9 +109,6 @@
                     <xs:restriction base="xs:string">
                         <xs:enumeration value="(NPART+1)*(NPART)/2"/>
                         <xs:enumeration value="(NUMOPG+1)*(NUMOPG)/2"/>
-                        <xs:enumeration value="(NUM_ADJ_PARM+1)*(NUM_ADJ_PARM)/2"/>
-                        <xs:enumeration value="(N1_CAL+1)*(N1_CAL)/2"/>
-                        <xs:enumeration value="(NUM_PARA+1)*(NUM_PARA)/2"/>
                         <xs:enumeration value="NPAR*NPARO"/>
                         <xs:enumeration value="NPLN-1"/>
                         <xs:enumeration value="NXPTS*NYPTS"/>

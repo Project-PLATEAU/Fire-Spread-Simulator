@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?
+<ElementAddSetting>
+
+  <!-- 取得要素設定（建物IDの設定） -->
+  <BldgId TargetType="0" TargetValue="bldg:Building gml:id" />
+
+  <!-- 取得要素設定（データ補完対象項目） -->
+  <!-- KOZO,MOKU,YOTOはデータ補完を行います -->
+  <KOZO>
+    <Taika    KeyName="耐火構造" TargetType="2" TargetValue="uro:buildingDetailAttribute/uro:BuildingDetailAttribute/uro:fireproofStructureType" />
+    <Tatemono KeyName="建物構造" TargetType="2" TargetValue="uro:buildingDetailAttribute/uro:BuildingDetailAttribute/uro:buildingStructureType" />
+    <Kaisu    KeyName="地上階数" TargetType="2" TargetValue="bldg:storeysAboveGround" />
+    <Nobeyuka KeyName="延床面積" TargetType="2" TargetValue="uro:buildingDetailAttribute/uro:BuildingDetailAttribute/uro:totalFloorArea" />
+    <Kenchiku KeyName="建築面積" TargetType="2" TargetValue="uro:buildingDetailAttribute/uro:BuildingDetailAttribute/uro:buildingFootprintArea" />
+  </KOZO>
+  <MOKU>
+    <Tatemono KeyName="建物構造" TargetType="2" TargetValue="uro:buildingDetailAttribute/uro:BuildingDetailAttribute/uro:buildingStructureType" />
+  </MOKU>
+  <YOTO>
+    <Mokuteki KeyName="利用目的" TargetType="2" TargetValue="bldg:usage" />
+  </YOTO>
+
+  <!-- 取得要素設定 -->
+  <GetElements>
+    <GetElement KeyName="BASE" TargetType="3" TargetValue="0.5" />
+    <GetElement KeyName="ZONE" TargetType="2" TargetValue="uro:buildingDetailAttribute/uro:BuildingDetailAttribute/uro:districtsAndZonesType" />
+    <GetElement KeyName="DAMAGE" TargetType="3" TargetValue="0" />
+  </GetElements>
+
+  <!-- 削除要素設定 -->
+  <!-- 指定の範囲外の場合に要素を削除します -->
+  <RemoveElements>
+    <RemoveElement TagName="bldg:measuredHeight" CheckMinValue="1" CheckMaxValue="999" />
+    <RemoveElement TagName="bldg:storeysAboveGround" CheckMinValue="1" CheckMaxValue="999" />
+  </RemoveElements>
+
+  <!-- 追加要素設定 -->
+  <!-- TagNameは外部ツールで使用しているため変更しないでください。 -->
+  <SimNamespaceUri>http://www.kantei.go.jp/jp/singi/tiiki/toshisaisei/itoshisaisei/iur/sim</SimNamespaceUri>
+  <SimNamespaceXsd>../../schema/CityfireSimulation.xsd</SimNamespaceXsd>
+  <AddParentElement>sim:cityFireSimulation/sim:CityFireSimulation</AddParentElement>
+  <AddElements>
+    <AddElement KeyName="BASE" TagName="sim:floorHeight" DefaultValue="0" />
+    <AddElement KeyName="KOZO" TagName="sim:fireproofStructureCityFireSimulationType" DefaultValue="0" />
+    <AddElement KeyName="MOKU" TagName="sim:buildingStructureCityFireSimulationType" DefaultValue="0" />
+    <AddElement KeyName="YOTO" TagName="sim:usageCityFireSimulation" DefaultValue="0" />
+    <AddElement KeyName="ZONE" TagName="sim:districtsAndZonesCityFireSimulationType" DefaultValue="0" />
+    <AddElement KeyName="DAMAGE" TagName="sim:earthquakeType" DefaultValue="0" />
+  </AddElements>
+</ElementAddSetting>

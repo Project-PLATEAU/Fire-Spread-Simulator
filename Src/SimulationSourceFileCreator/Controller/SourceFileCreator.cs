@@ -101,7 +101,7 @@ namespace SimulationSourceFileCreator.Controller
 
             try
             {
-                var setting = ElementAddSettting.Load(ConstSystemPath.SettingFilePath);
+                var setting = ElementAddSetting.Load(ConstSystemPath.SettingFilePath);
                 if (setting == null)
                 {
                     App.Logger.Error($"configファイルの読み込み失敗");
@@ -227,7 +227,7 @@ namespace SimulationSourceFileCreator.Controller
                     }
 
                     // データ補正
-                    if (!SmfrdatFileLoader.EditZeroPointShape())
+                    if (!SmfrdatFileLoader.CorrectOrRemoveInvalidShape())
                     {
                         errorCount++;
                         App.Logger.Error($"変換失敗：データ補正失敗 [{fileName}]");

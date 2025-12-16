@@ -40,7 +40,7 @@ if __name__ == '__main__':
     mesh_post = os.path.abspath(r'$MESH_POST')
 
     for filename in mesh_pre:  # use data.objects instead of context.scene.objects
-        bpy.ops.wm.stl_import(filepath=os.path.abspath(filename))
+        bpy.ops.import_mesh.stl(filepath=os.path.abspath(filename))
 
     mesh = bpy.data.objects[0]
     # Make sure mesh is the active object
@@ -56,12 +56,10 @@ if __name__ == '__main__':
         mod = mesh.modifiers.new('boolean', 'BOOLEAN')
         mod.object = other
         mod.operation = '$OPERATION'
-        mod.solver = '$SOLVER_OPTIONS'
-        mod.use_self = $USE_SELF
         # used mod.name instead of hard-coded "boolean"
         bpy.ops.object.modifier_apply(modifier=mod.name)
 
     delete_nonresult(bpy)
-    bpy.ops.wm.stl_export(
+    bpy.ops.export_mesh.stl(
         filepath=mesh_post,
-        apply_modifiers=True)
+        use_mesh_modifiers=True)

@@ -21,17 +21,17 @@ namespace SimulationSourceFileCreator.Controller
         /// <param name="setting">要素追加設定</param>
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>成否</returns>
-        internal bool CreateGmlFile(XmlDocument xmlDoc, XmlNamespaceManager xmlnsManager, XmlNodeList? buildingNodes, string inputCsvFilePath, string outputCityGMLFilePath, ElementAddSettting setting, CancellationTokenSource cancelToken)
+        internal bool CreateGmlFile(XmlDocument xmlDoc, XmlNamespaceManager xmlnsManager, XmlNodeList? buildingNodes, string inputCsvFilePath, string outputCityGMLFilePath, ElementAddSetting setting, CancellationTokenSource cancelToken)
         {
             // 名前空間の追加（sim）
             var simNamespaceUri = setting.SimNamespaceUri;
             var simNamespaceXsd = setting.SimNamespaceXsd;
-            simNamespaceUri = this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "sim", simNamespaceUri, simNamespaceXsd);
+            (_, simNamespaceUri) = CityGmlFileLoader.CheckAndAddNamespace(xmlDoc, xmlnsManager, "sim", simNamespaceUri, simNamespaceXsd);
 
             // 名前空間の追加（gen）
             var genNamespaceUri = "http://www.opengis.net/citygml/generics/2.0";
             var genNamespaceXsd = "http://schemas.opengis.net/citygml/generics/2.0/generics.xsd";
-            genNamespaceUri = this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "gen", genNamespaceUri, genNamespaceXsd);
+            (_, genNamespaceUri) = CityGmlFileLoader.CheckAndAddNamespace(xmlDoc, xmlnsManager, "gen", genNamespaceUri, genNamespaceXsd);
 
             // データ変換ツールで使用するnamespaceを追加
             this.AddRequiredNamespace(xmlDoc, xmlnsManager);
@@ -158,7 +158,7 @@ namespace SimulationSourceFileCreator.Controller
                     newnode.InnerText = dataValue;
                 }
 
-                // 階数の要素の削除（1フロア分の高さが低すぎる場合）
+                // 地上階数の要素の削除（LOD2で1フロア分の高さが低すぎる場合）
                 {
                     if (!bldgDataValueDict.TryGetValue(bldgId, out var dataValues))
                     {
@@ -260,13 +260,13 @@ namespace SimulationSourceFileCreator.Controller
                     var lod0FootPrintSurfaceMemberNodes = xmlBuildingNode.SelectNodes("bldg:lod0FootPrint/gml:MultiSurface/gml:surfaceMember", xmlnsManager);
                     (var printMinHeight, var printMaxHeight) = CityGmlFileLoader.GetPolygonsZValue(lod0FootPrintSurfaceMemberNodes, xmlnsManager);
 
-                    // bldg:lod0RoofEdge のZ値がすべてゼロの場合　→　bldg:lod0RoofEdge のZ値を bldg:lod1Solid の"最大"Z値 に修正
+                    // bldg:lod0RoofEdge のZ値がすべて0の場合　→　bldg:lod0RoofEdge のZ値を bldg:lod1Solid の"最大"Z値 に修正
                     if (!double.IsNaN(edgeMinHeight) && !double.IsNaN(edgeMaxHeight) && edgeMinHeight == 0d && edgeMaxHeight == 0d)
                     {
                         CityGmlFileLoader.SetPolygonsZValue(lod0RoofEdgeSurfaceMemberNodes, xmlnsManager, maxHeight);
                     }
 
-                    // bldg:lod0FootPrint のZ値がすべてゼロの場合　→　bldg:lod0FootPrint のZ値を bldg:lod1Solid の"最小"Z値 に修正
+                    // bldg:lod0FootPrint のZ値がすべて0の場合　→　bldg:lod0FootPrint のZ値を bldg:lod1Solid の"最小"Z値 に修正
                     if (!double.IsNaN(printMinHeight) && !double.IsNaN(printMaxHeight) && printMinHeight == 0d && printMaxHeight == 0d)
                     {
                         CityGmlFileLoader.SetPolygonsZValue(lod0FootPrintSurfaceMemberNodes, xmlnsManager, minHeight);
@@ -297,28 +297,28 @@ namespace SimulationSourceFileCreator.Controller
         private void AddRequiredNamespace(XmlDocument xmlDoc, XmlNamespaceManager xmlnsManager)
         {
             // core
-            this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "core", "http://www.opengis.net/citygml/2.0", "http://schemas.opengis.net/citygml/2.0/cityGMLBase.xsd");
+            this.CallCheckAndAddNamespace(xmlDoc, xmlnsManager, "core", "http://www.opengis.net/citygml/2.0", "http://schemas.opengis.net/citygml/2.0/cityGMLBase.xsd");
 
             // bldg
-            this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "bldg", "http://www.opengis.net/citygml/building/2.0", "http://schemas.opengis.net/citygml/building/2.0/building.xsd");
+            this.CallCheckAndAddNamespace(xmlDoc, xmlnsManager, "bldg", "http://www.opengis.net/citygml/building/2.0", "http://schemas.opengis.net/citygml/building/2.0/building.xsd");
 
             // gml
-            this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "gml", "http://www.opengis.net/gml", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
+            this.CallCheckAndAddNamespace(xmlDoc, xmlnsManager, "gml", "http://www.opengis.net/gml", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
 
             // app
-            this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "app", "http://www.opengis.net/citygml/appearance/2.0", "http://schemas.opengis.net/citygml/appearance/2.0/appearance.xsd");
+            this.CallCheckAndAddNamespace(xmlDoc, xmlnsManager, "app", "http://www.opengis.net/citygml/appearance/2.0", "http://schemas.opengis.net/citygml/appearance/2.0/appearance.xsd");
 
             // uro
-            this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "uro", "https://www.geospatial.jp/iur/uro/3.2", "../../schemas/iur/uro/3.2/urbanObject.xsd");
+            this.CallCheckAndAddNamespace(xmlDoc, xmlnsManager, "uro", "https://www.geospatial.jp/iur/uro/3.2", "../../schemas/iur/uro/3.2/urbanObject.xsd");
 
             // tran
-            this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "tran", "http://www.opengis.net/citygml/transportation/2.0", "http://schemas.opengis.net/citygml/transportation/2.0/transportation.xsd");
+            this.CallCheckAndAddNamespace(xmlDoc, xmlnsManager, "tran", "http://www.opengis.net/citygml/transportation/2.0", "http://schemas.opengis.net/citygml/transportation/2.0/transportation.xsd");
 
             // dem
-            this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "dem", "http://www.opengis.net/citygml/relief/2.0", string.Empty);
+            this.CallCheckAndAddNamespace(xmlDoc, xmlnsManager, "dem", "http://www.opengis.net/citygml/relief/2.0", string.Empty);
 
             // xAL
-            this.CheckAndAddNamespace(xmlDoc, xmlnsManager, "xAL", "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0", string.Empty);
+            this.CallCheckAndAddNamespace(xmlDoc, xmlnsManager, "xAL", "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0", string.Empty);
         }
 
         /// <summary>
@@ -329,47 +329,13 @@ namespace SimulationSourceFileCreator.Controller
         /// <param name="prefix">プレフィックス</param>
         /// <param name="namespaceUri">uri</param>
         /// <param name="namespaceXsd">xsd</param>
-        /// <returns>uri（既にプレフィックスがある場合は既存のuri）</returns>
-        private string CheckAndAddNamespace(XmlDocument xmlDoc, XmlNamespaceManager xmlnsManager, string prefix, string namespaceUri, string namespaceXsd)
+        private void CallCheckAndAddNamespace(XmlDocument xmlDoc, XmlNamespaceManager xmlnsManager, string prefix, string namespaceUri, string namespaceXsd)
         {
-            // 指定の名前空間が存在するかを確認する。
-            var pass = xmlDoc.DocumentElement.GetAttribute($"xmlns:{prefix}");
-
-            if (string.IsNullOrEmpty(pass))
+            var (added, _) = CityGmlFileLoader.CheckAndAddNamespace(xmlDoc, xmlnsManager, prefix, namespaceUri, namespaceXsd);
+            if (added)
             {
-                // 存在しない場合　→　追加
-                xmlDoc.DocumentElement.SetAttribute($"xmlns:{prefix}", namespaceUri);
-
-                // 順番を整える為（一番最後にする為）に一旦削除して追加
-                var orgLocationPass = xmlDoc.DocumentElement.GetAttribute("xsi:schemaLocation");
-                xmlDoc.DocumentElement.RemoveAttribute("xsi:schemaLocation");
-
-                // prefixはないがLocationPassは有る場合がある為、無い場合にのみ追加するようにする
-                if (string.IsNullOrEmpty(namespaceXsd) || orgLocationPass.Contains(namespaceUri))
-                {
-                    // 有る場合　→　そのまま追加
-                    xmlDoc.DocumentElement.SetAttribute("xsi:schemaLocation", $"{orgLocationPass}");
-                }
-                else
-                {
-                    // 無い場合　→　追記して追加
-                    xmlDoc.DocumentElement.SetAttribute("xsi:schemaLocation", $"{orgLocationPass} {namespaceUri} {namespaceXsd}");
-                }
-
-                xmlnsManager.AddNamespace(prefix, namespaceUri);
-
-                if (!prefix.Equals("sim"))
-                {
-                    App.Logger.Info($"データ変換ツール「GeneFile/plateau_conv.exe」で使用するnamespaceを追加 prefix = {prefix}");
-                }
+                App.Logger.Info($"データ変換ツール「GeneFile/plateau_conv.exe」で使用するnamespaceを追加 prefix = {prefix}");
             }
-            else
-            {
-                // 存在する場合　→　既存のuriで上書き
-                namespaceUri = pass;
-            }
-
-            return namespaceUri;
         }
     }
 }

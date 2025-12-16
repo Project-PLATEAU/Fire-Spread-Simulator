@@ -118,7 +118,7 @@ namespace SimulationSupportTool.Controller
         }
 
         /// <summary>
-        /// シミュレーションエンジンで使用するファイル・フォルダを準備します。
+        /// シミュレーションエンジンで使用するファイルを準備します。
         /// </summary>
         /// <param name="inputSimulationSourceFolderPath">シミュレーションデータフォルダパス</param>
         /// <param name="simulationTimeTotalMinutes">シミュレーション時間（単位：分）</param>
@@ -579,7 +579,7 @@ namespace SimulationSupportTool.Controller
                 SimulationStartDateTime = utcMidnight,
             };
 
-            var jsonStr = JsonConvert.SerializeObject(information);
+            var jsonStr = JsonConvert.SerializeObject(information, Formatting.Indented);
             File.WriteAllText(outputFilePath, jsonStr);
 
             return true;

@@ -1,0 +1,3 @@
+
+ReleasePackageのpublishのバッチでこのフォルダの外部ツールがコピーされます。
+

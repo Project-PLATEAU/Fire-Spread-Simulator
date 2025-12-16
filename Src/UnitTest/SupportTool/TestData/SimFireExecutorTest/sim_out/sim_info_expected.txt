@@ -1,0 +1,8 @@
+{
+  "simulationTimeTotalMinutes": 1,
+  "selectedSimulationRangeMeshNumbers": [
+    "47300284",
+    "47300285"
+  ],
+  "simulationStartDateTime": "2025-12-05T00:00:00Z"
+}

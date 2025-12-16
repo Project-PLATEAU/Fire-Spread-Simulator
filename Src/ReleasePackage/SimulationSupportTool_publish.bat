@@ -40,7 +40,7 @@ dotnet publish "..\SimulationResultFileConverter\SimulationResultFileConverter.c
 
 echo.
 echo #######################################################################################################
-echo 外部ツール：シミュレーションエンジン を ExternalTools から SimFire にコピーして配置
+echo 外部ツール：延焼シミュレーションエンジン を ExternalTools から SimFire にコピーして配置
 echo #######################################################################################################
 
 REM コピー元とコピー先を設定

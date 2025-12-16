@@ -7,10 +7,10 @@
         xmlns:local="clr-namespace:SimulationSourceFileCreator.View"
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.WindowTitle}"
-        Height="460"
-        Width="540"
-        MinHeight="460"
-        MinWidth="540"
+        Height="480"
+        Width="560"
+        MinHeight="480"
+        MinWidth="560"
         MaxWidth="1000"
         SizeToContent="Height"
         Closing="Window_Closing">
@@ -97,7 +97,9 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <TextBlock Text="※上記プルダウンの地域はわかりやすくしたもので、正確性を欠く内容である可能性があります。正確な範囲は「詳細を確認して選択」から確認して下さい。"
+                <TextBlock Text="※上記プルダウンの地域はわかりやすくしたもので、正確性を欠く内容である可能性があります。"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="　正確な範囲は「詳細を確認して選択」から確認して下さい。"
                            TextWrapping="Wrap"/>
             </StackPanel>
 
@@ -155,7 +157,7 @@
             <TextBlock Text="防火構造は以下の手順で手動で編集し、シミュレーション用データへの反映が可能です。"
                        Margin="0,0,0,5"/>
 
-            <TextBlock Text="1.【中間ファイルの出力】"
+            <TextBlock Text="1.【中間CSVファイルの出力】"
                        FontWeight="Bold"/>
 
             <Grid Margin="20,0,0,5">
@@ -165,7 +167,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0"
-                           Text="指定のフォルダ・ファイルの3D都市モデルを使用して、中間CSVを出力します。"
+                           Text="指定のフォルダ・ファイルの3D都市モデルを使用して中間CSVファイルを出力します。"
                            TextWrapping="Wrap"
                            VerticalAlignment="Center"/>
                 <Button Grid.Column="1"
@@ -176,22 +178,24 @@
                         CommandParameter="{x:Static local:ConvertType.ToCSV}"/>
             </Grid>
 
-            <TextBlock Text="2.【中間ファイルの編集】"
+            <TextBlock Text="2.【中間CSVファイルの編集】"
                        FontWeight="Bold"/>
 
             <StackPanel Margin="20,0,0,5">
-                <TextBlock Text="出力された中間CSVファイルを操作マニュアルの手順に従って修正してください。"/>
+                <TextBlock Text="出力された中間CSVファイルを操作マニュアルの手順に従って修正してください。"
+                           TextWrapping="Wrap"/>
                 <Grid Margin="0,3,0,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="365"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="80"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBox Grid.Column="0"
                              IsReadOnly="True"
                              Background="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
                              Text="{Binding OutputCSVFolderPath, Mode=OneWay}"
-                             Style="{StaticResource CommonTextBoxStyle}"/>
+                             Style="{StaticResource CommonTextBoxStyle}"
+                             Margin="0,0,5,0"/>
                     <TextBlock Grid.Column="1"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
@@ -210,7 +214,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                           Text="中間CSVを使用して指定の出力フォルダにシミュレーション用データを出力します。"
+                           Text="中間CSVファイルを使用して指定の出力フォルダにシミュレーション用データを出力します。"
                            TextWrapping="Wrap"
                            VerticalAlignment="Center"/>
                 <Button Grid.Column="1"
@@ -253,7 +257,7 @@
                 </StackPanel>
 
                 <!-- 高度な変換の内容 -->
-                <StackPanel Margin="20,5,20,10"
+                <StackPanel Margin="10,5,10,10"
                             Background="Beige"
                             HorizontalAlignment="Center">
                     <ContentControl Content="{StaticResource advancedContent}"

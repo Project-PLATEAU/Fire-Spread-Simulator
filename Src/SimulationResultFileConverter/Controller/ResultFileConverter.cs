@@ -410,7 +410,7 @@ namespace SimulationResultFileConverter.Controller
             var timePosList = new List<(int timeSec, string fromBldg, double formLng, double formLat, double fz, string toBldg, double toLng, double toLat, double tz)>();
             var seriesNumber = 9;
 
-            // 建物延焼情報から必要な情報を収集
+            // 延焼経路情報から必要な情報を収集
             using (var sr = new StreamReader(firepathFilePath))
             {
                 while (!sr.EndOfStream)

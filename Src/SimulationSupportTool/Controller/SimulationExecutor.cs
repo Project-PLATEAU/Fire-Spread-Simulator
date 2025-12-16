@@ -23,6 +23,11 @@ namespace SimulationSupportTool.Controller
         private ResultFileConvExecutor? resultFileConvExecutor;
 
         /// <summary>
+        /// 中止したかどうか
+        /// </summary>
+        private bool isCanceled = false;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <remarks>
@@ -54,6 +59,8 @@ namespace SimulationSupportTool.Controller
         /// <returns>非同期操作を表す <see cref="Task"/>（成否）</returns>
         internal async Task<bool> ExecuteAsync(string inputSimulationSourceFolderPath, string outputGisDataFolderPath, int simulationTimeTotalMinutes, string[] selectedSimulationRangeMeshNumbers, List<FirePoint> firePointList, List<WindCondition> windConditionList, bool isOutputKml, bool isOutputCzmlBuilding, bool isOutputCzmlFirePath, bool isEllipsoidHeight, IProgress<(string, string)> progress)
         {
+            this.isCanceled = false;
+
             this.simFireExecutor = SimFireExecutor.CreateInstance();
             if (this.simFireExecutor == null)
             {
@@ -68,14 +75,26 @@ namespace SimulationSupportTool.Controller
 
             /* シミュレーションエンジンで使用するファイル・フォルダの準備 */
             progress.Report(("シミュレーション準備中...", string.Empty));
-            if (!this.simFireExecutor.Prepare(
-                inputSimulationSourceFolderPath,
-                simulationTimeTotalMinutes,
-                selectedSimulationRangeMeshNumbers,
-                firePointList,
-                windConditionList))
+
+            var simFireExecutorPrepareRes = false;
+            await Task.Run(() =>
+            {
+                simFireExecutorPrepareRes = this.simFireExecutor.Prepare(
+                    inputSimulationSourceFolderPath,
+                    simulationTimeTotalMinutes,
+                    selectedSimulationRangeMeshNumbers,
+                    firePointList,
+                    windConditionList);
+            });
+
+            if (!simFireExecutorPrepareRes)
             {
                 return false;
+            }
+
+            if (this.isCanceled)
+            {
+                return true;
             }
 
             /* シミュレーションエンジンの実行と進捗確認 */
@@ -89,17 +108,29 @@ namespace SimulationSupportTool.Controller
                 return false;
             }
 
+            if (this.isCanceled)
+            {
+                return true;
+            }
+
             /* 出力変換処理 */
             progress.Report(("シミュレーション結果変換中...", string.Empty));
+
             var simOutputFolderPath = this.simFireExecutor.GetSimOutFolderPath();
-            if (!this.resultFileConvExecutor.Execute(
-                inputSimulationSourceFolderPath,
-                simOutputFolderPath,
-                outputGisDataFolderPath,
-                isOutputCzmlBuilding,
-                isOutputCzmlFirePath,
-                isEllipsoidHeight,
-                isOutputKml))
+            var resultFileConvExecutorExecuteRes = false;
+            await Task.Run(() =>
+            {
+                resultFileConvExecutorExecuteRes = this.resultFileConvExecutor.Execute(
+                    inputSimulationSourceFolderPath,
+                    simOutputFolderPath,
+                    outputGisDataFolderPath,
+                    isOutputCzmlBuilding,
+                    isOutputCzmlFirePath,
+                    isEllipsoidHeight,
+                    isOutputKml);
+            });
+
+            if (!resultFileConvExecutorExecuteRes)
             {
                 return false;
             }
@@ -114,6 +145,7 @@ namespace SimulationSupportTool.Controller
         internal void Cancel()
         {
             // 強制終了
+            this.isCanceled = true;
             this.simFireExecutor?.Cancel();
             this.resultFileConvExecutor?.Cancel();
         }

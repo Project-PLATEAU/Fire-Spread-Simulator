@@ -20,7 +20,7 @@ namespace SimulationSourceFileCreator.Controller
         /// <param name="setting">要素追加設定</param>
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>成否</returns>
-        internal bool CreateCSVFile(XmlNamespaceManager xmlnsManager, XmlNodeList? buildingNodes, string outputCsvFilePath, string selectedFireproofStructureType, ElementAddSettting setting, CancellationTokenSource cancelToken)
+        internal bool CreateCSVFile(XmlNamespaceManager xmlnsManager, XmlNodeList? buildingNodes, string outputCsvFilePath, string selectedFireproofStructureType, ElementAddSetting setting, CancellationTokenSource cancelToken)
         {
             using (StreamWriter writer = new StreamWriter(outputCsvFilePath, false, new UTF8Encoding(true)))
             {
@@ -121,7 +121,7 @@ namespace SimulationSourceFileCreator.Controller
         /// 補完結果と補完に利用した値の配列<br/>
         /// [KOZO][耐火構造][建物構造][地上階数][延床面積][建築面積]
         /// </returns>
-        private string[] SupplementKOZO(ElementAddSetttingSupplementItem kozoSetting, string selectedFireproofStructureType, XmlNode xmlBuildingNode, XmlNamespaceManager xmlnsManager)
+        private string[] SupplementKOZO(ElementAddSettingSupplementItem kozoSetting, string selectedFireproofStructureType, XmlNode xmlBuildingNode, XmlNamespaceManager xmlnsManager)
         {
             var taikaValue = CityGmlFileLoader.GetTagValue(xmlBuildingNode, xmlnsManager, kozoSetting.Taika);
             var tatemonoValue = CityGmlFileLoader.GetTagValue(xmlBuildingNode, xmlnsManager, kozoSetting.Tatemono);
@@ -191,7 +191,7 @@ namespace SimulationSourceFileCreator.Controller
 
             /* 3.地上階数・延床面積による判断 */
 
-            // 地上階数が4以上又は延床面積が3000㎡を超える
+            // 地上階数が4以上または延床面積が3000㎡を超える
             if ((isKaisuValid && 3d < kaisuNumber) || (isNobeyukaValid && 3000d < nobeyukaNumber))
             {
                 result[0] = "1";
@@ -223,7 +223,7 @@ namespace SimulationSourceFileCreator.Controller
                 return result;
             }
 
-            // 建築面積×地上階数の値が3000㎡以下、または不明
+            // 建築面積×地上階数の値が3000㎡以下または不明
             result[0] = selectedFireproofStructureType;
             return result;
         }
@@ -239,7 +239,7 @@ namespace SimulationSourceFileCreator.Controller
         /// 補完結果と補完に利用した値の配列<br/>
         /// [MOKU][建物構造]
         /// </returns>
-        private string[] SupplementMOKU(ElementAddSetttingSupplementItem mokuSetting, string kozoValue, XmlNode xmlBuildingNode, XmlNamespaceManager xmlnsManager)
+        private string[] SupplementMOKU(ElementAddSettingSupplementItem mokuSetting, string kozoValue, XmlNode xmlBuildingNode, XmlNamespaceManager xmlnsManager)
         {
             var tatemonoValue = CityGmlFileLoader.GetTagValue(xmlBuildingNode, xmlnsManager, mokuSetting.Tatemono);
 
@@ -293,7 +293,7 @@ namespace SimulationSourceFileCreator.Controller
         /// 補完結果と補完に利用した値の配列<br/>
         /// [YOTO][利用目的]
         /// </returns>
-        private string[] SupplementYOTO(ElementAddSetttingSupplementItem yotoSetting, XmlNode xmlBuildingNode, XmlNamespaceManager xmlnsManager)
+        private string[] SupplementYOTO(ElementAddSettingSupplementItem yotoSetting, XmlNode xmlBuildingNode, XmlNamespaceManager xmlnsManager)
         {
             var mokutekiValue = CityGmlFileLoader.GetTagValue(xmlBuildingNode, xmlnsManager, yotoSetting.Mokuteki);
 

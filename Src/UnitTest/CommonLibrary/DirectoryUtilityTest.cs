@@ -25,7 +25,7 @@ public class DirectoryUtilityTest
     [DataRow("test_folder1", "*",     0)]
     [DataRow("test_folder1", "*.csv", 2)]
     [DataRow("test_folder1", "*.ini", 3)]
-    public void TestMethod_Success(string targetFolderName, string targetExtension, int expectedFileCount)
+    public void CleanupDirectoryTest_Success(string targetFolderName, string targetExtension, int expectedFileCount)
     {
         // テスト用フォルダの準備
         var destDir = Path.Combine(TestDataFolder, targetFolderName);
@@ -59,7 +59,7 @@ public class DirectoryUtilityTest
     [DataRow("",            "*.csv", "targetFolderPath")]
     [DataRow("test_folder2", null,   "targetExtension")]
     [DataRow("test_folder2", "", 　　"targetExtension")]
-    public void TestMethod_Exception(string targetFolderPath, string targetExtension, string expectedExceptionItem)
+    public void CleanupDirectoryTest_Exception(string targetFolderPath, string targetExtension, string expectedExceptionItem)
     {
         var ex = Assert.ThrowsException<ArgumentNullException>(() => DirectoryUtility.CleanupDirectory(targetFolderPath, targetExtension));
         Assert.IsTrue(ex.Message.Contains(expectedExceptionItem));
@@ -69,7 +69,7 @@ public class DirectoryUtilityTest
     /// 失敗：対象フォルダがない
     /// </summary>
     [TestMethod]
-    public void TestMethod_Failure()
+    public void CleanupDirectoryTest_Failure()
     {
         var destDir = Path.Combine(TestDataFolder, "test_folder3");
 

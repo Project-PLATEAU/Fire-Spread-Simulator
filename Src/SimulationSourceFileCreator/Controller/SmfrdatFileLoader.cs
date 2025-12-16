@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using SimulationSourceFileCreator.Model;
+using SimulationSourceFileCreator.Utility;
 
 namespace SimulationSourceFileCreator.Controller
 {
@@ -13,12 +14,14 @@ namespace SimulationSourceFileCreator.Controller
         /// データ補正を行います。
         /// </summary>
         /// <returns>成否</returns>
-        internal static bool EditZeroPointShape()
+        internal static bool CorrectOrRemoveInvalidShape()
         {
-            var sourceFilePath = Path.Combine("GeneFile", "gene_out", "smfrdat_source.txt");
-            var destFilePath = Path.Combine("GeneFile", "gene_out", "smfrdat.txt");
+            var currentDir = Directory.GetCurrentDirectory();
+            var sourceFilePath = Path.Combine(currentDir, "GeneFile", "gene_out", "smfrdat_source.txt");
+            var destFilePath = Path.Combine(currentDir, "GeneFile", "gene_out", "smfrdat.txt");
 
-            var removeCount = 0;
+            var removeBldgCount = 0;
+            var isBldgStart = false;
 
             using (var sr = new StreamReader(sourceFilePath, new UTF8Encoding(false)))
             using (var sw = new StreamWriter(destFilePath, false, new UTF8Encoding(false)))
@@ -29,9 +32,17 @@ namespace SimulationSourceFileCreator.Controller
 
                     if (!line.Contains("bldg"))
                     {
+                        if (isBldgStart)
+                        {
+                            App.Logger.Error("データ変換ツール「GeneFile/plateau_conv.exe」の結果ファイルの形式不備");
+                            return false;
+                        }
+
                         sw.WriteLine(line);
                         continue;
                     }
+
+                    isBldgStart = true;
 
                     // 1棟分のデータ収集
                     var bldg = GetBldgSmfrdat(line, sr);
@@ -39,6 +50,9 @@ namespace SimulationSourceFileCreator.Controller
                     {
                         return false;
                     }
+
+                    // 1棟分のデータチェック（平面形状種の形状チェック）
+                    CheckAndModifyOrientation(bldg);
 
                     // 1棟分のデータチェック（平面形状種の頂点数チェック）
                     if (bldg.HasZeroPointShape)
@@ -48,15 +62,9 @@ namespace SimulationSourceFileCreator.Controller
 
                         if (!isSuccess)
                         {
-                            removeCount++;
+                            removeBldgCount++;
                             continue;
                         }
-                    }
-
-                    // 1棟分のデータチェック（平面形状種の頂点順チェック）
-                    if (!CheckAndModifyOrientation(bldg))
-                    {
-                        return false;
                     }
 
                     // 1棟分のデータ出力
@@ -89,9 +97,9 @@ namespace SimulationSourceFileCreator.Controller
             }
 
             // 建物自体を削除した場合
-            if (removeCount != 0)
+            if (removeBldgCount != 0)
             {
-                var tempFilePath = Path.Combine("GeneFile", "gene_out", "smfrdat.temp");
+                var tempFilePath = Path.Combine(currentDir, "GeneFile", "gene_out", "smfrdat.temp");
 
                 // ヘッダーの建物件数を修正
                 using (var sr = new StreamReader(destFilePath, new UTF8Encoding(false)))
@@ -106,7 +114,7 @@ namespace SimulationSourceFileCreator.Controller
                         if (lineCount == 5)
                         {
                             _ = int.TryParse(line, out var bldgCount);
-                            bldgCount -= removeCount;
+                            bldgCount -= removeBldgCount;
 
                             line = bldgCount.ToString();
                         }
@@ -134,7 +142,8 @@ namespace SimulationSourceFileCreator.Controller
         {
             bldgAboveFloorNumDict = []; // key = bldgId、vaule = 地上階数
 
-            var filePath = Path.Combine("GeneFile", "gene_out", "smfrdat.txt");
+            var currentDir = Directory.GetCurrentDirectory();
+            var filePath = Path.Combine(currentDir, "GeneFile", "gene_out", "smfrdat.txt");
 
             using (var sr = new StreamReader(filePath, new UTF8Encoding(false)))
             {
@@ -201,11 +210,6 @@ namespace SimulationSourceFileCreator.Controller
                 }
 
                 bldg.BldgShapes.Add(bldgShape);
-
-                if (bldgShape.PointCount == 0)
-                {
-                    bldg.HasZeroPointShape = true;
-                }
 
                 for (var j = 0; j < bldgShape.PointCount; j++)
                 {
@@ -331,34 +335,53 @@ namespace SimulationSourceFileCreator.Controller
         }
 
         /// <summary>
-        /// 平面形状種のポリゴンの向きをチェックして修正します。
+        /// 平面形状種のポリゴンの形状をチェックして修正します。
         /// </summary>
         /// <param name="bldg">建物情報</param>
-        /// <returns>成否</returns>
-        private static bool CheckAndModifyOrientation(BldgSmfrdat bldg)
+        private static void CheckAndModifyOrientation(BldgSmfrdat bldg)
         {
+            var index = -1;
             foreach (var shape in bldg.BldgShapes)
             {
-                var orientation = shape.CalculatePolygonOrientation();
+                index++;
+
+                if (shape.PointCount == 0)
+                {
+                    continue;
+                }
+
+                var isSelfIntersection = PolygonUtility.HasSelfIntersection(shape.BldgShapePoints);
+
+                if (isSelfIntersection)
+                {
+                    // 自己交差　→　不正の為、頂点を削除
+                    App.Logger.Warn($"平面形状種の頂点を削除（0件にする）（形状不正：自己交差）bldgId = {bldg.GetBldgId()}, index = {index}");
+                    shape.ClearBldgShapePoints();
+                    continue;
+                }
+
+                var orientation = PolygonUtility.CalculatePolygonOrientation(shape.BldgShapePoints);
+
+                if (orientation > 0)
+                {
+                    // 反時計回り　→　OK（何もしない）
+                    continue;
+                }
+
                 if (orientation < 0)
                 {
-                    // 反時計回り　→　OK
-                }
-                else if (orientation > 0)
-                {
                     // 時計回り　→　反転させる
-                    App.Logger.Warn($"平面形状種の頂点順を反転（頂点が時計回り）bldgId = {bldg.GetBldgId()}");
+                    App.Logger.Warn($"平面形状種の頂点順を反転（形状不正：頂点が時計回り）bldgId = {bldg.GetBldgId()}, index = {index}");
                     shape.BldgShapePoints.Reverse();
+                    shape.BldgShapePoints.First().SetRoopFlag(1);
+                    shape.BldgShapePoints.Last().SetRoopFlag(0);
+                    continue;
                 }
-                else
-                {
-                    // それ以外（頂点が一直線上、または自己交差）　→　不正
-                    App.Logger.Error($"平面形状種の頂点が不正（頂点が一直線上、または自己交差）bldgId = {bldg.GetBldgId()}");
-                    return false;
-                }
-            }
 
-            return true;
+                // それ以外（頂点が一直線上）　→　不正の為、頂点を削除
+                App.Logger.Warn($"平面形状種の頂点を削除（0件にする）（形状不正：頂点が一直線上）bldgId = {bldg.GetBldgId()}, index = {index}");
+                shape.ClearBldgShapePoints();
+            }
         }
     }
 }

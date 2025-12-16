@@ -126,7 +126,7 @@ function geoOnEachFeature(feature, layer) {
             if (meshNumberMaxCount <= Object.keys(selectedMeshNumberDict).length) {
 
                 // これ以上選択できない
-                showWarningMessageBox('シミュレーション範囲を選択できません。\r\n最大件数（' + meshNumberMaxCount + '件）に達しています。');
+                showWarningMessageBox('シミュレーション範囲を選択できません。\r\n選択可能最大件数（' + meshNumberMaxCount + '件）に達しています。');
                 return;
             }
 

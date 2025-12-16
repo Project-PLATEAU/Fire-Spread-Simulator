@@ -655,7 +655,7 @@ namespace SimulationSupportTool.View
 
             if (this.windConditionMaxCount <= maxNo)
             {
-                MessageBoxUtility.ShowWarning($"風向・風速を設定できません。\r\n最大件数（{this.windConditionMaxCount}件）に達しています。", Properties.Resources.WindowTitle);
+                MessageBoxUtility.ShowWarning($"風向・風速を設定できません。\r\n設定可能最最大件数（{this.windConditionMaxCount}件）に達しています。", Properties.Resources.WindowTitle);
                 return;
             }
 
@@ -664,7 +664,7 @@ namespace SimulationSupportTool.View
 
             if (this.windConditionMaxCount <= maxNo + 1)
             {
-                MessageBoxUtility.ShowInformation($"風向・風速の設定可能最大件数（{this.windConditionMaxCount}件）に達しました。", Properties.Resources.WindowTitle);
+                MessageBoxUtility.ShowInformation($"風向・風速の\r\n設定可能最大件数（{this.windConditionMaxCount}件）に達しました。", Properties.Resources.WindowTitle);
                 return;
             }
 
