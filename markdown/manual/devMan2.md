@@ -39,15 +39,20 @@
 
 ## 3.1ダウンロード・展開
 
-1.	[こちら](https://github.com/Project-PLATEAU/Fire-Spread-Simulator/Src/)
+1.	[こちら](https://github.com/Project-PLATEAU/Fire-Spread-Simulator/)
 に格納されているソースコード一式を任意のフォルダに展開します。
 
-    ※以降の手順のパスは、すべてこのフォルダを起点（ルート）とした相対パスで記載します。
+    ※本ファイルにはパスの長いファイルが含まれるため、Windows標準の「すべて展開」機能ではエラーが出る場合があります。Cドライブ直下などの浅い階層で展開するか、PowerShellのExpand-Archiveコマンドなどの長いパスに対応した解凍方法をご利用ください。
+
+
+
+    ※以降の手順のパスは、すべてSrcフォルダを起点（ルート）とした相対パスで記載します。
 
 2.	国総研より配布を受けたエンジン「simFireMP64.exe」を以下の2か所に配置します。
 
  - \ExternalTools\SimFire_ForSourceFileCreator
  - \ExternalTools\SimFire_ForSupportTool
+
 
 
 
