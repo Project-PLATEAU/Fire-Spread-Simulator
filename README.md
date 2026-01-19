@@ -143,7 +143,7 @@
 - 最小動作環境は令和7年度Project PLATEAU直轄事業内で検証した内容です。
 
 ## 10. 参考資料 <!-- 技術検証レポートのURLはアクセンチュアにて記載します。 -->
-- 技術検証レポート: ※公開後リンク貼付予定
+- 技術検証レポート: https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0132_ver01.pdf
 - PLATEAU WebサイトのUse caseページ「火災延焼シミュレーションシステムの開発」:https://www.mlit.go.jp/plateau/use-case/uc25-08/
 
 - 国土交通省総合技術開発プロジェクト 「高度な画像処理による減災を目指した国土の監視技術の開発　総合報告書(平成22年12月　国土交通省)」: https://www.gsi.go.jp/common/000226161.pdf
